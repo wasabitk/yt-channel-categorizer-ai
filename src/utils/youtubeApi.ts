@@ -1,5 +1,5 @@
 import { YoutubeChannel } from "@/types";
-import { YOUTUBE_API_KEY } from "./constants";
+import { getYoutubeApiKey } from "./constants";
 
 export const extractChannelId = (url: string): string | null => {
   let id = null;
@@ -47,8 +47,9 @@ export const extractChannelId = (url: string): string | null => {
 export const getVideoDetails = async (videoId: string): Promise<{channelId: string, channelTitle: string} | null> => {
   try {
     console.log(`Fetching details for video ID: ${videoId}`);
+    const apiKey = getYoutubeApiKey();
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${YOUTUBE_API_KEY}`
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`
     );
     
     const data = await response.json();
@@ -107,8 +108,9 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
           
         console.log(`Searching for channel with term: ${searchTerm}`);
         
+        const apiKey = getYoutubeApiKey();
         const searchResponse = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchTerm as string)}&type=channel&key=${YOUTUBE_API_KEY}`
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchTerm as string)}&type=channel&key=${apiKey}`
         );
         const searchData = await searchResponse.json();
         
@@ -138,8 +140,9 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
     
     // Get channel details
     console.log(`Fetching details for channel ID: ${channelId}`);
+    const apiKey = getYoutubeApiKey();
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`
+      `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`
     );
     
     const data = await response.json();
@@ -191,8 +194,9 @@ export const getRecentVideos = async (channelId: string, maxResults: number = 5)
     
     if (!channelId.startsWith("UC")) {
       // This may be a handle, username, or custom URL - search for the channel
+      const apiKey = getYoutubeApiKey();
       const searchResponse = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${channelId}&type=channel&key=${YOUTUBE_API_KEY}`
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${channelId}&type=channel&key=${apiKey}`
       );
       
       const searchData = await searchResponse.json();
@@ -211,8 +215,9 @@ export const getRecentVideos = async (channelId: string, maxResults: number = 5)
     }
     
     // Now get the videos using the actual channel ID
+    const apiKey = getYoutubeApiKey();
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${actualChannelId}&maxResults=${maxResults}&order=date&type=video&key=${YOUTUBE_API_KEY}`
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${actualChannelId}&maxResults=${maxResults}&order=date&type=video&key=${apiKey}`
     );
     
     const data = await response.json();

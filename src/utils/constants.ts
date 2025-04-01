@@ -36,5 +36,29 @@ export const CATEGORIES: CategoryDescription[] = [
   }
 ];
 
-export const YOUTUBE_API_KEY = "AIzaSyDOKv_bQ9FYE6SASykeC5lkosZP4EGESFU";
+// Default API keys
+export const DEFAULT_YOUTUBE_API_KEY = "AIzaSyDOKv_bQ9FYE6SASykeC5lkosZP4EGESFU";
 export const OPENAI_API_KEY = "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";
+
+// LocalStorage key for custom YouTube API key
+export const CUSTOM_YOUTUBE_API_KEY_STORAGE = "customYoutubeApiKey";
+
+// Get the active YouTube API key (custom or default)
+export const getYoutubeApiKey = (): string => {
+  const customKey = localStorage.getItem(CUSTOM_YOUTUBE_API_KEY_STORAGE);
+  return customKey || DEFAULT_YOUTUBE_API_KEY;
+};
+
+// Save a custom YouTube API key
+export const saveCustomYoutubeApiKey = (key: string): void => {
+  if (key && key.trim() !== "") {
+    localStorage.setItem(CUSTOM_YOUTUBE_API_KEY_STORAGE, key.trim());
+  } else {
+    localStorage.removeItem(CUSTOM_YOUTUBE_API_KEY_STORAGE);
+  }
+};
+
+// Clear the custom YouTube API key (revert to default)
+export const clearCustomYoutubeApiKey = (): void => {
+  localStorage.removeItem(CUSTOM_YOUTUBE_API_KEY_STORAGE);
+};

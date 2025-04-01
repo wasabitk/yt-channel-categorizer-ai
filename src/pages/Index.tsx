@@ -6,6 +6,7 @@ import ResultsSection from "@/components/ResultsSection";
 import ProcessInfo from "@/components/ProcessInfo";
 import CategoriesInfo from "@/components/CategoriesInfo";
 import QuotaExceededAlert from "@/components/QuotaExceededAlert";
+import ApiKeySettings from "@/components/ApiKeySettings";
 import { useYoutubeProcessing } from "@/hooks/useYoutubeProcessing";
 import { toast } from "sonner";
 
@@ -37,7 +38,10 @@ const Index = () => {
       <main className="container flex-1 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <QuotaExceededAlert show={quotaExceeded} />
+            <div className="flex justify-between items-center">
+              <QuotaExceededAlert show={quotaExceeded} />
+              <ApiKeySettings />
+            </div>
             
             <InputSection 
               channels={channels}
