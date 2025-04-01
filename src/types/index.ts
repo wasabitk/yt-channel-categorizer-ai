@@ -16,6 +16,7 @@ export interface CategoryDescription {
 
 export interface YoutubeChannel {
   url: string;
+  originalUrl?: string; // To store the original video URL if applicable
   name: string;
   category?: Category;
   thumbnailUrl?: string;

@@ -30,6 +30,10 @@ export const useYoutubeProcessing = () => {
     // Process each channel sequentially to avoid rate limiting
     for (let i = 0; i < updatedChannels.length; i++) {
       try {
+        // Check if it's a video URL
+        const isVideoUrl = updatedChannels[i].url.includes("youtube.com/watch") || 
+                         updatedChannels[i].url.includes("youtu.be/");
+        
         // Update status to processing
         updatedChannels[i] = { ...updatedChannels[i], status: 'processing' };
         setChannels(updatedChannels.slice());
@@ -46,6 +50,11 @@ export const useYoutubeProcessing = () => {
           updatedChannels[i] = channelWithDetails;
           setChannels(updatedChannels.slice());
           continue;
+        }
+        
+        // If this was a video URL, show a message
+        if (isVideoUrl && !channelWithDetails.error) {
+          toast.success(`Successfully extracted channel from video: ${channelWithDetails.name}`);
         }
         
         // Categorize the channel using OpenAI

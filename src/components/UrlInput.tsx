@@ -13,6 +13,11 @@ interface UrlInputProps {
 const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
   const [youtubeUrl, setYoutubeUrl] = useState("");
 
+  // Check if the URL is a video URL or a channel URL
+  const isVideoUrl = (url: string): boolean => {
+    return url.includes("youtube.com/watch") || url.includes("youtu.be/");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -28,6 +33,11 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
       status: 'pending'
     };
     
+    // Show a toast if this is a video URL
+    if (isVideoUrl(youtubeUrl)) {
+      toast.info("Detected a video URL. Extracting channel information...");
+    }
+    
     // Process the channel
     await onUrlSubmit(newChannel);
     
@@ -40,14 +50,14 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
       <form onSubmit={handleSubmit} className="flex gap-2 items-end">
         <div className="flex-1">
           <label htmlFor="youtube-url" className="block text-sm font-medium mb-1">
-            YouTube Channel URL
+            YouTube Channel or Video URL
           </label>
           <Input
             id="youtube-url"
             type="text"
             value={youtubeUrl}
             onChange={(e) => setYoutubeUrl(e.target.value)}
-            placeholder="https://www.youtube.com/@channelname"
+            placeholder="https://www.youtube.com/@channelname or https://youtu.be/videoId"
             className="w-full"
           />
         </div>
@@ -59,7 +69,7 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
         </Button>
       </form>
       <p className="text-xs text-muted-foreground">
-        Enter a YouTube channel URL to analyze and categorize it
+        Enter a YouTube channel URL or video URL to analyze and categorize the channel
       </p>
     </div>
   );
