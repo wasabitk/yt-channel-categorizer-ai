@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { YoutubeChannel } from "@/types";
-import { getChannelDetails } from "@/utils/youtubeApi";
+import { getChannelDetails } from "@/utils/youtube";
 import { categorizeChannel } from "@/utils/openaiApi";
 import { toast } from "sonner";
 

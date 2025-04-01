@@ -1,78 +1,16 @@
+
 import { YoutubeChannel } from "@/types";
-import { getYoutubeApiKey } from "./constants";
+import { getYoutubeApiKey } from "../constants";
+import { extractChannelId } from "./extractors";
+import { getVideoDetails } from "./videoApi";
 
-export const extractChannelId = (url: string): string | null => {
-  let id = null;
-  
-  // Check if this is a video URL
-  const videoIdMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s?]+)/);
-  
-  if (videoIdMatch && videoIdMatch[1]) {
-    // This is a video URL, we'll need to fetch the video details to get the channel ID
-    return videoIdMatch[1];
-  }
-  
-  // Try to extract channel ID from channel URL
-  const urlPatterns = [
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/channel\/([^\/\s?]+)/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/c\/([^\/\s?]+)/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/user\/([^\/\s?]+)/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/@([^\/\s?]+)/
-  ];
-  
-  for (const pattern of urlPatterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) {
-      id = match[1];
-      break;
-    }
-  }
-  
-  // If we couldn't extract using patterns, check if the URL contains a handle
-  if (!id && url.includes('@')) {
-    try {
-      // Extract the handle part (like @channelname)
-      const handleMatch = url.match(/@([^\/\s?]+)/);
-      if (handleMatch && handleMatch[1]) {
-        id = handleMatch[1];
-      }
-    } catch (error) {
-      console.error("Error extracting handle:", error);
-    }
-  }
-  
-  return id;
-};
+/**
+ * Functions for interacting with YouTube's channel API endpoints
+ */
 
-export const getVideoDetails = async (videoId: string): Promise<{channelId: string, channelTitle: string} | null> => {
-  try {
-    console.log(`Fetching details for video ID: ${videoId}`);
-    const apiKey = getYoutubeApiKey();
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`
-    );
-    
-    const data = await response.json();
-    
-    if (data.error) {
-      throw new Error(data.error.message || "YouTube API error");
-    }
-    
-    if (!data.items || data.items.length === 0) {
-      throw new Error("Video not found");
-    }
-    
-    const videoData = data.items[0].snippet;
-    return {
-      channelId: videoData.channelId,
-      channelTitle: videoData.channelTitle
-    };
-  } catch (error) {
-    console.error("Error fetching video details:", error);
-    return null;
-  }
-};
-
+/**
+ * Fetches channel details based on the provided channel object
+ */
 export const getChannelDetails = async (channel: YoutubeChannel): Promise<YoutubeChannel> => {
   try {
     let channelId = null;
@@ -181,60 +119,5 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
       status: 'error',
       error: error instanceof Error ? error.message : 'Failed to fetch channel details'
     };
-  }
-};
-
-export const getRecentVideos = async (channelId: string, maxResults: number = 5): Promise<any[]> => {
-  try {
-    console.log(`Getting recent videos for channel: ${channelId}`);
-    
-    // First check if the channelId is a handle or username
-    // If so, we need to get the actual channel ID first
-    let actualChannelId = channelId;
-    
-    if (!channelId.startsWith("UC")) {
-      // This may be a handle, username, or custom URL - search for the channel
-      const apiKey = getYoutubeApiKey();
-      const searchResponse = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${channelId}&type=channel&key=${apiKey}`
-      );
-      
-      const searchData = await searchResponse.json();
-      
-      if (searchData.error) {
-        console.error("YouTube search API error:", searchData.error);
-        throw new Error(searchData.error.message || "YouTube API error");
-      }
-      
-      if (searchData.items && searchData.items.length > 0) {
-        actualChannelId = searchData.items[0].id.channelId;
-        console.log(`Converted ${channelId} to actual channel ID: ${actualChannelId}`);
-      } else {
-        throw new Error("Could not find channel ID");
-      }
-    }
-    
-    // Now get the videos using the actual channel ID
-    const apiKey = getYoutubeApiKey();
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${actualChannelId}&maxResults=${maxResults}&order=date&type=video&key=${apiKey}`
-    );
-    
-    const data = await response.json();
-    
-    // Check for API errors
-    if (data.error) {
-      console.error("YouTube API error:", data.error);
-      throw new Error(data.error.message || "YouTube API error");
-    }
-    
-    if (!data.items) {
-      return [];
-    }
-    
-    return data.items;
-  } catch (error) {
-    console.error("Error fetching recent videos:", error);
-    throw error; // Re-throw to allow the calling component to handle it
   }
 };

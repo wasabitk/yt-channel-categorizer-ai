@@ -1,7 +1,7 @@
 
 import { Category, YoutubeChannel } from "@/types";
 import { CATEGORIES, OPENAI_API_KEY } from "./constants";
-import { getRecentVideos, extractChannelId } from "./youtubeApi";
+import { getRecentVideos, extractChannelId } from "./youtube";
 
 export const categorizeChannel = async (channel: YoutubeChannel): Promise<Category> => {
   try {
