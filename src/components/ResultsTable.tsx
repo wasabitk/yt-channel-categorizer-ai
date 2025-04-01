@@ -138,8 +138,8 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
                     <TableCell>{getStatusBadge(channel.status, channel.error, index)}</TableCell>
                   </TableRow>
                   
-                  {channel.status === 'error' && (
-                    <TableRow className={expandedRows[index] ? 'bg-muted/30' : 'hidden'}>
+                  {channel.status === 'error' && expandedRows[index] && (
+                    <TableRow className="bg-muted/30">
                       <TableCell colSpan={5} className="p-4">
                         <div className="space-y-2">
                           <h4 className="font-semibold text-sm">Error Details:</h4>

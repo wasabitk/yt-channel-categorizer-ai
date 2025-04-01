@@ -21,6 +21,19 @@ export const extractChannelId = (channelUrl: string): string | null => {
     }
   }
   
+  // If we couldn't extract using patterns, check if the URL contains a handle
+  if (!id && channelUrl.includes('@')) {
+    try {
+      // Extract the handle part (like @channelname)
+      const handleMatch = channelUrl.match(/@([^\/\s?]+)/);
+      if (handleMatch && handleMatch[1]) {
+        id = handleMatch[1];
+      }
+    } catch (error) {
+      console.error("Error extracting handle:", error);
+    }
+  }
+  
   return id;
 };
 
