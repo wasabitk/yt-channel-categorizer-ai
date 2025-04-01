@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { downloadCSV, generateCSV } from "@/utils/csvUtils";
 import { ChevronDown, ChevronRight, FileText, User } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
 import { 
@@ -50,14 +49,17 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
         return <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Completed</Badge>;
       case 'error':
         return (
-          <CollapsibleTrigger asChild onClick={(e) => { e.stopPropagation(); if (index !== undefined) toggleRow(index); }}>
+          <div 
+            onClick={(e) => { e.stopPropagation(); if (index !== undefined) toggleRow(index); }}
+            className="cursor-pointer"
+          >
             <Badge 
               variant="outline" 
-              className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 cursor-pointer flex items-center gap-1"
+              className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 flex items-center gap-1"
             >
               Error {expandedRows[index as number] ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
             </Badge>
-          </CollapsibleTrigger>
+          </div>
         );
       default:
         return <Badge variant="outline">Unknown</Badge>;
@@ -107,11 +109,7 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
             </TableHeader>
             <TableBody>
               {channels.map((channel, index) => (
-                <Collapsible
-                  key={index}
-                  open={expandedRows[index]}
-                  onOpenChange={() => channel.status === 'error' && toggleRow(index)}
-                >
+                <React.Fragment key={index}>
                   <TableRow className={expandedRows[index] ? 'border-b-0' : ''}>
                     <TableCell>
                       <Avatar>
@@ -145,8 +143,8 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
                     <TableCell>{getStatusBadge(channel.status, channel.error, index)}</TableCell>
                   </TableRow>
                   
-                  <CollapsibleContent>
-                    <TableRow className="bg-muted/30">
+                  {channel.status === 'error' && (
+                    <TableRow className={expandedRows[index] ? 'bg-muted/30' : 'hidden'}>
                       <TableCell colSpan={5} className="p-4">
                         <div className="space-y-2">
                           <h4 className="font-semibold text-sm">Error Details:</h4>
@@ -159,8 +157,8 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
                         </div>
                       </TableCell>
                     </TableRow>
-                  </CollapsibleContent>
-                </Collapsible>
+                  )}
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
