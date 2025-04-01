@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { downloadCSV, generateCSV } from "@/utils/csvUtils";
-import { ChevronDown, ChevronRight, FileText, User, Eye } from "lucide-react";
+import { ChevronDown, ChevronRight, ExternalLink, FileText, User, Eye } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ResultsTableProps {
@@ -123,9 +123,16 @@ const ResultsTable = ({ channels, onViewVideos }: ResultsTableProps) => {
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{channel.name}</div>
-                        <div className="text-xs text-muted-foreground truncate max-w-xs">
-                          {channel.url}
+                        <div className="font-medium flex items-center gap-1">
+                          <a 
+                            href={channel.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="hover:underline text-primary flex items-center"
+                          >
+                            {channel.name}
+                            <ExternalLink className="h-3 w-3 ml-1" />
+                          </a>
                         </div>
                       </div>
                     </TableCell>
