@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				youtube: {
+					DEFAULT: '#FF0000',
+					foreground: '#FFFFFF'
+				},
+				tag: {
+					DEFAULT: '#6366F1',
+					foreground: '#FFFFFF'
 				}
 			},
 			borderRadius: {
