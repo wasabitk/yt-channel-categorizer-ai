@@ -1,4 +1,3 @@
-
 import { YoutubeChannel } from "@/types";
 import { 
   Table, 
@@ -11,8 +10,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { downloadCSV, generateCSV } from "@/utils/csvUtils";
-import { FileText } from "lucide-react";
+import { FileText, User } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ResultsTableProps {
   channels: YoutubeChannel[];
@@ -95,13 +95,17 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
               {channels.map((channel, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    {channel.thumbnailUrl && (
-                      <img 
-                        src={channel.thumbnailUrl} 
-                        alt={channel.name} 
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    )}
+                    <Avatar>
+                      {channel.thumbnailUrl ? (
+                        <AvatarImage 
+                          src={channel.thumbnailUrl} 
+                          alt={channel.name} 
+                        />
+                      ) : null}
+                      <AvatarFallback>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
                   </TableCell>
                   <TableCell>
                     <div>
