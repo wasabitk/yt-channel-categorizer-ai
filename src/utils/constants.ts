@@ -36,5 +36,5 @@ export const CATEGORIES: CategoryDescription[] = [
   }
 ];
 
-export const YOUTUBE_API_KEY = "AIzaSyDwIoawhhYALbxBNSdx-OrLmbhbGcetYN8";
+export const YOUTUBE_API_KEY = "AIzaSyDOKv_bQ9FYE6SASykeC5lkosZP4EGESFU";
 export const OPENAI_API_KEY = "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";
