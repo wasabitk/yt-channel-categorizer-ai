@@ -4,6 +4,13 @@ import { CATEGORIES, OPENAI_API_KEY } from "./constants";
 
 export const categorizeChannel = async (channel: YoutubeChannel): Promise<Category> => {
   try {
+    // If we don't have enough channel information due to API errors, 
+    // we can't properly categorize it
+    if (channel.status === 'error' || !channel.name) {
+      console.warn("Cannot categorize channel due to insufficient data", channel);
+      return "Other";
+    }
+    
     const categoryDescriptions = CATEGORIES.map(cat => 
       `${cat.name}: ${cat.description}`
     ).join('\n\n');
