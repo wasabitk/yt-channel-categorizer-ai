@@ -1,3 +1,4 @@
+
 import { YoutubeChannel } from "@/types";
 import { 
   Table, 
@@ -10,21 +11,36 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { downloadCSV, generateCSV } from "@/utils/csvUtils";
-import { FileText, User } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, User } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface ResultsTableProps {
   channels: YoutubeChannel[];
 }
 
 const ResultsTable = ({ channels }: ResultsTableProps) => {
+  const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
+
+  const toggleRow = (index: number) => {
+    setExpandedRows(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
   const handleDownload = () => {
     const csvData = generateCSV(channels);
     downloadCSV(csvData);
   };
 
-  const getStatusBadge = (status?: string, errorMessage?: string) => {
+  const getStatusBadge = (status?: string, errorMessage?: string, index?: number) => {
     switch (status) {
       case 'pending':
         return <Badge variant="outline" className="bg-muted">Pending</Badge>;
@@ -34,16 +50,14 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
         return <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Completed</Badge>;
       case 'error':
         return (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge variant="outline" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 cursor-help">
-                Error
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <p>{errorMessage || "An unknown error occurred"}</p>
-            </TooltipContent>
-          </Tooltip>
+          <CollapsibleTrigger asChild onClick={(e) => { e.stopPropagation(); if (index !== undefined) toggleRow(index); }}>
+            <Badge 
+              variant="outline" 
+              className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 cursor-pointer flex items-center gap-1"
+            >
+              Error {expandedRows[index as number] ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+            </Badge>
+          </CollapsibleTrigger>
         );
       default:
         return <Badge variant="outline">Unknown</Badge>;
@@ -93,38 +107,60 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
             </TableHeader>
             <TableBody>
               {channels.map((channel, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Avatar>
-                      {channel.thumbnailUrl ? (
-                        <AvatarImage 
-                          src={channel.thumbnailUrl} 
-                          alt={channel.name} 
-                        />
-                      ) : null}
-                      <AvatarFallback>
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{channel.name}</div>
-                      <div className="text-xs text-muted-foreground truncate max-w-xs">
-                        {channel.url}
+                <Collapsible
+                  key={index}
+                  open={expandedRows[index]}
+                  onOpenChange={() => channel.status === 'error' && toggleRow(index)}
+                >
+                  <TableRow className={expandedRows[index] ? 'border-b-0' : ''}>
+                    <TableCell>
+                      <Avatar>
+                        {channel.thumbnailUrl ? (
+                          <AvatarImage 
+                            src={channel.thumbnailUrl} 
+                            alt={channel.name} 
+                          />
+                        ) : null}
+                        <AvatarFallback>
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{channel.name}</div>
+                        <div className="text-xs text-muted-foreground truncate max-w-xs">
+                          {channel.url}
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{formatSubscriberCount(channel.subscriberCount)}</TableCell>
-                  <TableCell>
-                    {channel.category ? (
-                      <Badge className="bg-tag">{channel.category}</Badge>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">Not categorized</span>
-                    )}
-                  </TableCell>
-                  <TableCell>{getStatusBadge(channel.status, channel.error)}</TableCell>
-                </TableRow>
+                    </TableCell>
+                    <TableCell>{formatSubscriberCount(channel.subscriberCount)}</TableCell>
+                    <TableCell>
+                      {channel.category ? (
+                        <Badge className="bg-tag">{channel.category}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">Not categorized</span>
+                      )}
+                    </TableCell>
+                    <TableCell>{getStatusBadge(channel.status, channel.error, index)}</TableCell>
+                  </TableRow>
+                  
+                  <CollapsibleContent>
+                    <TableRow className="bg-muted/30">
+                      <TableCell colSpan={5} className="p-4">
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-sm">Error Details:</h4>
+                          <div className="text-sm text-red-600 dark:text-red-400 p-3 bg-red-50 dark:bg-red-950/30 rounded-md">
+                            {channel.error || "An unknown error occurred while processing this channel."}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Try again later or check if the channel URL is correct and accessible.
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  </CollapsibleContent>
+                </Collapsible>
               ))}
             </TableBody>
           </Table>
