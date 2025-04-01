@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { downloadCSV, generateCSV } from "@/utils/csvUtils";
 import { FileText } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ResultsTableProps {
   channels: YoutubeChannel[];
@@ -23,7 +24,7 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
     downloadCSV(csvData);
   };
 
-  const getStatusBadge = (status?: string) => {
+  const getStatusBadge = (status?: string, errorMessage?: string) => {
     switch (status) {
       case 'pending':
         return <Badge variant="outline" className="bg-muted">Pending</Badge>;
@@ -32,7 +33,18 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
       case 'completed':
         return <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Completed</Badge>;
       case 'error':
-        return <Badge variant="outline" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Error</Badge>;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="outline" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 cursor-help">
+                Error
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <p>{errorMessage || "An unknown error occurred"}</p>
+            </TooltipContent>
+          </Tooltip>
+        );
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
@@ -107,7 +119,7 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
                       <span className="text-muted-foreground text-sm">Not categorized</span>
                     )}
                   </TableCell>
-                  <TableCell>{getStatusBadge(channel.status)}</TableCell>
+                  <TableCell>{getStatusBadge(channel.status, channel.error)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
