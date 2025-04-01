@@ -5,7 +5,7 @@ import ResultsTable from "@/components/ResultsTable";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { getRecentVideos, extractChannelId } from "@/utils/youtubeApi";
+import { getRecentVideos, extractChannelId } from "@/utils/youtube";
 
 interface ResultsSectionProps {
   channels: YoutubeChannel[];
