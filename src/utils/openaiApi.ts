@@ -1,7 +1,7 @@
 
 import { Category, YoutubeChannel } from "@/types";
 import { CATEGORIES, OPENAI_API_KEY } from "./constants";
-import { getRecentVideos } from "./youtubeApi";
+import { getRecentVideos, extractChannelId } from "./youtubeApi";
 
 export const categorizeChannel = async (channel: YoutubeChannel): Promise<Category> => {
   try {
@@ -16,19 +16,26 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     const knownChannels: Record<string, Category> = {
       "Benaminute": "Politics / News (Left Wing)",
       "@itsbenaminute": "Politics / News (Left Wing)",
+      "Wendigoon": "True Crime or Mystery",
+      "@Wendigoon": "True Crime or Mystery"
       // Add more known channels here as needed
     };
     
     // Check if this is a known channel that should have a specific category
     if (channel.name && knownChannels[channel.name]) {
+      console.log(`Using known category override for ${channel.name}: ${knownChannels[channel.name]}`);
       return knownChannels[channel.name];
     }
     
     // Also check for handle matches
     if (channel.url) {
       const handleMatch = channel.url.match(/@([^\/\s?]+)/);
-      if (handleMatch && handleMatch[1] && knownChannels[`@${handleMatch[1]}`]) {
-        return knownChannels[`@${handleMatch[1]}`];
+      if (handleMatch && handleMatch[1]) {
+        const handle = `@${handleMatch[1]}`;
+        if (knownChannels[handle]) {
+          console.log(`Using known category override for handle ${handle}: ${knownChannels[handle]}`);
+          return knownChannels[handle];
+        }
       }
     }
     
@@ -36,13 +43,16 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     let recentVideoTitles: string[] = [];
     
     try {
-      // Extract channel ID from the URL if possible
-      const channelIdMatch = channel.url.match(/(?:channel|c)\/([^\/\s?]+)/);
-      const channelId = channelIdMatch ? channelIdMatch[1] : null;
-      
-      if (channelId) {
-        const videos = await getRecentVideos(channelId, 10);
-        recentVideoTitles = videos.map(video => video.snippet.title);
+      if (channel.url) {
+        // Extract channel ID from the URL
+        const channelId = extractChannelId(channel.url);
+        
+        if (channelId) {
+          console.log(`Fetching video titles for channel ID: ${channelId}`);
+          const videos = await getRecentVideos(channelId, 10);
+          recentVideoTitles = videos.map(video => video.snippet.title);
+          console.log(`Found ${recentVideoTitles.length} video titles for analysis`);
+        }
       }
     } catch (error) {
       console.warn("Failed to fetch recent videos, proceeding with basic info", error);
@@ -74,6 +84,8 @@ Based only on these predefined categories, which ONE category best describes thi
 Respond with just the category name, exactly as written above.
 
 Note that political commentary channels should be categorized as either "Politics / News (Left Wing)" or "Politics / News (Right Wing)" even if their description is short. Pay special attention to the video titles as they often reveal the true nature of the channel's content and political leaning better than the description.
+
+If the channel discusses strange, dark, or mysterious topics, unsolved mysteries, true crime, conspiracy theories, or horror stories, it should be categorized as "True Crime or Mystery".
 `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -97,6 +109,7 @@ Note that political commentary channels should be categorized as either "Politic
     }
     
     const categoryText = data.choices[0]?.message?.content?.trim();
+    console.log(`AI suggested category: ${categoryText}`);
     
     // Find the closest matching category from our defined list
     const validCategory = CATEGORIES.find(cat => cat.name === categoryText) 
