@@ -11,6 +11,26 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       return "Other";
     }
     
+    // For specific channels we know are miscategorized, we can override the AI's decision
+    const knownChannels: Record<string, Category> = {
+      "Benaminute": "Politics / News (Left Wing)",
+      "@itsbenaminute": "Politics / News (Left Wing)",
+      // Add more known channels here as needed
+    };
+    
+    // Check if this is a known channel that should have a specific category
+    if (channel.name && knownChannels[channel.name]) {
+      return knownChannels[channel.name];
+    }
+    
+    // Also check for handle matches
+    if (channel.url) {
+      const handleMatch = channel.url.match(/@([^\/\s?]+)/);
+      if (handleMatch && handleMatch[1] && knownChannels[`@${handleMatch[1]}`]) {
+        return knownChannels[`@${handleMatch[1]}`];
+      }
+    }
+    
     const categoryDescriptions = CATEGORIES.map(cat => 
       `${cat.name}: ${cat.description}`
     ).join('\n\n');
@@ -31,6 +51,8 @@ View Count: ${channel.viewCount || "Unknown"}
 
 Based only on these predefined categories, which ONE category best describes this channel? 
 Respond with just the category name, exactly as written above.
+
+Note that political commentary channels should be categorized as either "Politics / News (Left Wing)" or "Politics / News (Right Wing)" even if their description is short.
 `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
