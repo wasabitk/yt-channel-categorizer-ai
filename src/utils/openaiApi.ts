@@ -1,6 +1,7 @@
 
 import { Category, YoutubeChannel } from "@/types";
 import { CATEGORIES, OPENAI_API_KEY } from "./constants";
+import { getRecentVideos } from "./youtubeApi";
 
 export const categorizeChannel = async (channel: YoutubeChannel): Promise<Category> => {
   try {
@@ -31,6 +32,22 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       }
     }
     
+    // Fetch recent video titles to include in the analysis
+    let recentVideoTitles: string[] = [];
+    
+    try {
+      // Extract channel ID from the URL if possible
+      const channelIdMatch = channel.url.match(/(?:channel|c)\/([^\/\s?]+)/);
+      const channelId = channelIdMatch ? channelIdMatch[1] : null;
+      
+      if (channelId) {
+        const videos = await getRecentVideos(channelId, 10);
+        recentVideoTitles = videos.map(video => video.snippet.title);
+      }
+    } catch (error) {
+      console.warn("Failed to fetch recent videos, proceeding with basic info", error);
+    }
+    
     const categoryDescriptions = CATEGORIES.map(cat => 
       `${cat.name}: ${cat.description}`
     ).join('\n\n');
@@ -48,11 +65,15 @@ Channel Description: ${channel.description || "Not available"}
 Subscriber Count: ${channel.subscriberCount || "Unknown"}
 Video Count: ${channel.videoCount || "Unknown"}
 View Count: ${channel.viewCount || "Unknown"}
+${recentVideoTitles.length > 0 ? `
+Recent Video Titles:
+${recentVideoTitles.map((title, index) => `${index + 1}. ${title}`).join('\n')}
+` : ''}
 
 Based only on these predefined categories, which ONE category best describes this channel? 
 Respond with just the category name, exactly as written above.
 
-Note that political commentary channels should be categorized as either "Politics / News (Left Wing)" or "Politics / News (Right Wing)" even if their description is short.
+Note that political commentary channels should be categorized as either "Politics / News (Left Wing)" or "Politics / News (Right Wing)" even if their description is short. Pay special attention to the video titles as they often reveal the true nature of the channel's content and political leaning better than the description.
 `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

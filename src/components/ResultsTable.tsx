@@ -12,14 +12,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { downloadCSV, generateCSV } from "@/utils/csvUtils";
-import { ChevronDown, ChevronRight, FileText, User } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, User, Eye } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ResultsTableProps {
   channels: YoutubeChannel[];
+  onViewVideos?: (channel: YoutubeChannel) => void;
 }
 
-const ResultsTable = ({ channels }: ResultsTableProps) => {
+const ResultsTable = ({ channels, onViewVideos }: ResultsTableProps) => {
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
 
   const toggleRow = (index: number) => {
@@ -100,6 +101,7 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
                 <TableHead>Subscribers</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="w-[100px]">Status</TableHead>
+                <TableHead className="w-[80px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -136,11 +138,23 @@ const ResultsTable = ({ channels }: ResultsTableProps) => {
                       )}
                     </TableCell>
                     <TableCell>{getStatusBadge(channel.status, channel.error, index)}</TableCell>
+                    <TableCell>
+                      {channel.status === 'completed' && onViewVideos && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onViewVideos(channel)}
+                          title="View recent videos"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                   
                   {channel.status === 'error' && expandedRows[index] && (
                     <TableRow className="bg-muted/30">
-                      <TableCell colSpan={5} className="p-4">
+                      <TableCell colSpan={6} className="p-4">
                         <div className="space-y-2">
                           <h4 className="font-semibold text-sm">Error Details:</h4>
                           <div className="text-sm text-red-600 dark:text-red-400 p-3 bg-red-50 dark:bg-red-950/30 rounded-md">
