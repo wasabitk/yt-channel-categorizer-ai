@@ -42,11 +42,20 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
     // First get the channel ID if the input is a custom URL
     let channelId = extractChannelId(channel.url);
     
-    // If we couldn't extract an ID, try to search for the channel by name
-    if (!channelId && channel.name) {
+    // If we have a handle (starting with @), we need to use search to find the actual channelId
+    const isHandle = channelId && !channelId.includes("UC") && (channelId.startsWith("@") || channel.url.includes("@"));
+    
+    if (isHandle || (!channelId && channel.name)) {
       try {
+        // Get the search term - either the handle without @ or the channel name
+        const searchTerm = isHandle ? 
+          (channelId?.startsWith("@") ? channelId.substring(1) : channelId) : 
+          channel.name;
+          
+        console.log(`Searching for channel with term: ${searchTerm}`);
+        
         const searchResponse = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(channel.name)}&type=channel&key=${YOUTUBE_API_KEY}`
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchTerm as string)}&type=channel&key=${YOUTUBE_API_KEY}`
         );
         const searchData = await searchResponse.json();
         
@@ -60,6 +69,7 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
         
         if (searchData.items && searchData.items.length > 0) {
           channelId = searchData.items[0].id.channelId;
+          console.log(`Found channel ID from search: ${channelId}`);
         } else {
           throw new Error("Channel not found");
         }
@@ -74,6 +84,7 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
     }
     
     // Get channel details
+    console.log(`Fetching details for channel ID: ${channelId}`);
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`
     );
