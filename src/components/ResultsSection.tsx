@@ -4,8 +4,8 @@ import { YoutubeChannel } from "@/types";
 import ResultsTable from "@/components/ResultsTable";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getRecentVideos } from "@/utils/youtubeApi";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { getRecentVideos, extractChannelId } from "@/utils/youtubeApi";
 
 interface ResultsSectionProps {
   channels: YoutubeChannel[];
@@ -16,6 +16,7 @@ const ResultsSection = ({ channels }: ResultsSectionProps) => {
   const [isLoadingVideos, setIsLoadingVideos] = useState(false);
   const [videoDialogOpen, setVideoDialogOpen] = useState(false);
   const [selectedChannelName, setSelectedChannelName] = useState("");
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const handleViewVideos = async (channel: YoutubeChannel) => {
     if (!channel.url) return;
@@ -23,31 +24,27 @@ const ResultsSection = ({ channels }: ResultsSectionProps) => {
     setIsLoadingVideos(true);
     setSelectedChannelName(channel.name);
     setVideoDialogOpen(true);
+    setFetchError(null);
+    setSelectedVideos([]);
     
     try {
-      // Extract channel ID from the URL
-      const channelIdMatch = channel.url.match(/(?:channel|c)\/([^\/\s?]+)/);
-      const handleMatch = channel.url.match(/@([^\/\s?]+)/);
-      
-      let channelId = null;
-      
-      if (channelIdMatch && channelIdMatch[1]) {
-        channelId = channelIdMatch[1];
-      } else if (handleMatch && handleMatch[1]) {
-        // For handles, we'd need to search first but that's already in the youtubeApi.ts
-        // This is simplified for now
-        channelId = handleMatch[1];
-      }
+      // Use the existing extractChannelId utility from youtubeApi.ts
+      const channelId = extractChannelId(channel.url);
       
       if (channelId) {
+        console.log(`Fetching videos for channel ID: ${channelId}`);
         const videos = await getRecentVideos(channelId, 5);
         setSelectedVideos(videos);
+        
+        if (videos.length === 0) {
+          setFetchError("No videos found for this channel. The channel might not have public videos or there could be an issue with the YouTube API.");
+        }
       } else {
-        setSelectedVideos([]);
+        setFetchError("Could not determine channel ID from the provided URL.");
       }
     } catch (error) {
       console.error("Error fetching videos:", error);
-      setSelectedVideos([]);
+      setFetchError(error instanceof Error ? error.message : "Failed to fetch videos");
     } finally {
       setIsLoadingVideos(false);
     }
@@ -65,6 +62,9 @@ const ResultsSection = ({ channels }: ResultsSectionProps) => {
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Recent Videos from {selectedChannelName}</DialogTitle>
+            <DialogDescription>
+              Showing up to 5 most recent videos from this channel
+            </DialogDescription>
           </DialogHeader>
           
           {isLoadingVideos ? (
@@ -94,7 +94,14 @@ const ResultsSection = ({ channels }: ResultsSectionProps) => {
             </div>
           ) : (
             <div className="text-center p-6 text-muted-foreground">
-              No videos found for this channel.
+              {fetchError ? (
+                <div className="space-y-2">
+                  <p>{fetchError}</p>
+                  <p className="text-sm">Try again later or check if the channel URL is correct.</p>
+                </div>
+              ) : (
+                "No videos found for this channel."
+              )}
             </div>
           )}
         </DialogContent>
