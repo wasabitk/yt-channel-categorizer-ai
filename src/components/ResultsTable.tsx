@@ -1,4 +1,5 @@
 
+import React, { useState } from "react";
 import { YoutubeChannel } from "@/types";
 import { 
   Table, 
@@ -13,12 +14,6 @@ import { Button } from "@/components/ui/button";
 import { downloadCSV, generateCSV } from "@/utils/csvUtils";
 import { ChevronDown, ChevronRight, FileText, User } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useState } from "react";
-import { 
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 interface ResultsTableProps {
   channels: YoutubeChannel[];
