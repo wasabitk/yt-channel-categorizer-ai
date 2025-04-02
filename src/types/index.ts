@@ -1,4 +1,14 @@
 
+export type BrandName = 
+  | "Aura"
+  | "Gaming Inc"
+  | "Fashion Hub";
+
+export interface Brand {
+  name: BrandName;
+  categories: CategoryDescription[];
+}
+
 export type Category = 
   | "Scambaiter"
   | "Internet Reacts / Internet Gossip"
@@ -7,6 +17,10 @@ export type Category =
   | "True Crime or Mystery"
   | "Guns / Military"
   | "Cars"
+  | "Gaming"
+  | "Fashion & Beauty"
+  | "Tech Reviews"
+  | "Travel"
   | "Other";
 
 export interface CategoryDescription {
@@ -26,6 +40,7 @@ export interface YoutubeChannel {
   viewCount?: string;
   status?: 'pending' | 'processing' | 'completed' | 'error';
   error?: string;
+  brandName?: BrandName; // Added to track which brand's categories were used
 }
 
 export interface AnalysisResult {

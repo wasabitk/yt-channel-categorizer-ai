@@ -1,7 +1,8 @@
 
-import { CategoryDescription } from "@/types";
+import { Brand, CategoryDescription, BrandName } from "@/types";
 
-export const CATEGORIES: CategoryDescription[] = [
+// Aura brand categories (original categories)
+const AURA_CATEGORIES: CategoryDescription[] = [
   {
     name: "Scambaiter",
     description: "In this content category, YouTube creators entertain their audiences by calling professional scam call centers and waste their time or delete their files."
@@ -36,12 +37,81 @@ export const CATEGORIES: CategoryDescription[] = [
   }
 ];
 
+// Gaming Inc brand categories
+const GAMING_CATEGORIES: CategoryDescription[] = [
+  {
+    name: "Gaming",
+    description: "YouTube creators who play video games, provide game reviews, walkthroughs, or gaming-related content."
+  },
+  {
+    name: "Tech Reviews",
+    description: "YouTube creators who review gaming hardware, peripherals, or other technology products."
+  },
+  {
+    name: "Internet Reacts / Internet Gossip",
+    description: "Gaming influencers or channels that react to gaming news, drama, or industry developments."
+  },
+  {
+    name: "Other",
+    description: "Any content that doesn't fit into the specific gaming-related categories above."
+  }
+];
+
+// Fashion Hub brand categories
+const FASHION_CATEGORIES: CategoryDescription[] = [
+  {
+    name: "Fashion & Beauty",
+    description: "YouTube creators who showcase fashion trends, beauty products, makeup tutorials, or clothing hauls."
+  },
+  {
+    name: "Internet Reacts / Internet Gossip",
+    description: "Channels that react to fashion events, celebrity outfits, or industry news."
+  },
+  {
+    name: "Travel",
+    description: "Fashion-focused travel content, destination fashion guides, or travel lookbooks."
+  },
+  {
+    name: "Other",
+    description: "Content that doesn't align with the fashion-specific categories above."
+  }
+];
+
+// All available brands
+export const BRANDS: Brand[] = [
+  {
+    name: "Aura",
+    categories: AURA_CATEGORIES
+  },
+  {
+    name: "Gaming Inc",
+    categories: GAMING_CATEGORIES
+  },
+  {
+    name: "Fashion Hub",
+    categories: FASHION_CATEGORIES
+  }
+];
+
+// Default brand is Aura
+export const DEFAULT_BRAND: BrandName = "Aura";
+
+// Get categories for a specific brand
+export const getCategoriesForBrand = (brandName: BrandName): CategoryDescription[] => {
+  const brand = BRANDS.find(b => b.name === brandName);
+  return brand ? brand.categories : AURA_CATEGORIES;
+};
+
+// Get the active categories (defaulting to Aura if no brand specified)
+export const CATEGORIES = AURA_CATEGORIES;
+
 // Default API keys
 export const DEFAULT_YOUTUBE_API_KEY = "AIzaSyDOKv_bQ9FYE6SASykeC5lkosZP4EGESFU";
 export const OPENAI_API_KEY = "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";
 
-// LocalStorage key for custom YouTube API key
+// LocalStorage keys
 export const CUSTOM_YOUTUBE_API_KEY_STORAGE = "customYoutubeApiKey";
+export const SELECTED_BRAND_STORAGE = "selectedBrand";
 
 // Get the active YouTube API key (custom or default)
 export const getYoutubeApiKey = (): string => {
@@ -61,4 +131,15 @@ export const saveCustomYoutubeApiKey = (key: string): void => {
 // Clear the custom YouTube API key (revert to default)
 export const clearCustomYoutubeApiKey = (): void => {
   localStorage.removeItem(CUSTOM_YOUTUBE_API_KEY_STORAGE);
+};
+
+// Get the selected brand (from localStorage or default)
+export const getSelectedBrand = (): BrandName => {
+  const savedBrand = localStorage.getItem(SELECTED_BRAND_STORAGE) as BrandName | null;
+  return savedBrand || DEFAULT_BRAND;
+};
+
+// Save the selected brand
+export const saveSelectedBrand = (brandName: BrandName): void => {
+  localStorage.setItem(SELECTED_BRAND_STORAGE, brandName);
 };

@@ -1,6 +1,6 @@
 
-import { Category, YoutubeChannel } from "@/types";
-import { CATEGORIES, OPENAI_API_KEY } from "./constants";
+import { Category, YoutubeChannel, BrandName } from "@/types";
+import { OPENAI_API_KEY, getCategoriesForBrand, getSelectedBrand } from "./constants";
 import { getRecentVideos, extractChannelId } from "./youtube";
 
 export const categorizeChannel = async (channel: YoutubeChannel): Promise<Category> => {
@@ -11,6 +11,9 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       console.warn("Cannot categorize channel due to insufficient data", channel);
       return "Other";
     }
+    
+    // Get the brand for this channel (use the channel's brand or the currently selected brand)
+    const brandName = channel.brandName || getSelectedBrand();
     
     // For specific channels we know are miscategorized, we can override the AI's decision
     const knownChannels: Record<string, Category> = {
@@ -28,8 +31,13 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     
     // Check if this is a known channel that should have a specific category
     if (channel.name && knownChannels[channel.name]) {
-      console.log(`Using known category override for ${channel.name}: ${knownChannels[channel.name]}`);
-      return knownChannels[channel.name];
+      // Only use the override if that category exists for the current brand
+      const categories = getCategoriesForBrand(brandName);
+      const override = knownChannels[channel.name];
+      if (categories.some(cat => cat.name === override)) {
+        console.log(`Using known category override for ${channel.name}: ${knownChannels[channel.name]}`);
+        return knownChannels[channel.name];
+      }
     }
     
     // Also check for handle matches
@@ -38,8 +46,13 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       if (handleMatch && handleMatch[1]) {
         const handle = `@${handleMatch[1]}`;
         if (knownChannels[handle]) {
-          console.log(`Using known category override for handle ${handle}: ${knownChannels[handle]}`);
-          return knownChannels[handle];
+          // Only use the override if that category exists for the current brand
+          const categories = getCategoriesForBrand(brandName);
+          const override = knownChannels[handle];
+          if (categories.some(cat => cat.name === override)) {
+            console.log(`Using known category override for handle ${handle}: ${knownChannels[handle]}`);
+            return knownChannels[handle];
+          }
         }
       }
     }
@@ -63,7 +76,9 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       console.warn("Failed to fetch recent videos, proceeding with basic info", error);
     }
     
-    const categoryDescriptions = CATEGORIES.map(cat => 
+    // Get categories for the selected brand
+    const brandCategories = getCategoriesForBrand(brandName);
+    const categoryDescriptions = brandCategories.map(cat => 
       `${cat.name}: ${cat.description}`
     ).join('\n\n');
     
@@ -118,9 +133,12 @@ If the channel is focused on military topics, weapons, firearms, aviation histor
     const categoryText = data.choices[0]?.message?.content?.trim();
     console.log(`AI suggested category: ${categoryText}`);
     
-    // Find the closest matching category from our defined list
-    const validCategory = CATEGORIES.find(cat => cat.name === categoryText) 
-      || CATEGORIES.find(cat => categoryText.includes(cat.name));
+    // Find the closest matching category from our defined list for this brand
+    const validCategory = brandCategories.find(cat => cat.name === categoryText) 
+      || brandCategories.find(cat => categoryText.includes(cat.name));
+      
+    // Tag the channel with the brand name for reference
+    channel.brandName = brandName;
       
     return validCategory?.name || "Other";
   } catch (error) {
