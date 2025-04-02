@@ -17,7 +17,12 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       "Benaminute": "Politics / News (Left Wing)",
       "@itsbenaminute": "Politics / News (Left Wing)",
       "Wendigoon": "True Crime or Mystery",
-      "@Wendigoon": "True Crime or Mystery"
+      "@Wendigoon": "True Crime or Mystery",
+      "Dark Skies": "Guns / Military",
+      "@Dark_Skies": "Guns / Military",
+      "@DarkSkiesChannel": "Guns / Military",
+      "Military Aviation History": "Guns / Military",
+      "@MilitaryAviationHistory": "Guns / Military"
       // Add more known channels here as needed
     };
     
@@ -86,6 +91,8 @@ Respond with just the category name, exactly as written above.
 Note that political commentary channels should be categorized as either "Politics / News (Left Wing)" or "Politics / News (Right Wing)" even if their description is short. Pay special attention to the video titles as they often reveal the true nature of the channel's content and political leaning better than the description.
 
 If the channel discusses strange, dark, or mysterious topics, unsolved mysteries, true crime, conspiracy theories, or horror stories, it should be categorized as "True Crime or Mystery".
+
+If the channel is focused on military topics, weapons, firearms, aviation history, combat footage, defense systems, armed forces, military history, military technology, or similar content, it should be categorized as "Guns / Military". This includes channels about aircraft, tanks, naval vessels, and other military equipment, even if they don't directly show people firing guns.
 `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
