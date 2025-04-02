@@ -38,6 +38,7 @@ export const knownChannelIds: Record<string, Category> = {
  * Important: These are the exact video IDs that appear in YouTube URLs
  */
 export const knownVideoIds: Record<string, Category> = {
-  "z1sKwev21gE": "Internet Reacts / Internet Gossip" // Specific Internet Reacts video
+  "z1sKwev21gE": "Internet Reacts / Internet Gossip", // Specific Internet Reacts video
+  "v32NRpqRFoU": "Internet Reacts / Internet Gossip"  // Another Internet Reacts video example
 };
 

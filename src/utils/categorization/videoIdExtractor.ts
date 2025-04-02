@@ -4,8 +4,11 @@
  */
 export const extractVideoId = (url?: string): string | null => {
   if (!url) {
+    console.log("Cannot extract video ID: URL is undefined");
     return null;
   }
+  
+  console.log(`Attempting to extract video ID from URL: ${url}`);
   
   // More specific regex to extract video ID from different YouTube URL formats
   const videoIdRegexes = [
@@ -25,4 +28,3 @@ export const extractVideoId = (url?: string): string | null => {
   console.log(`Failed to extract video ID from URL: ${url}`);
   return null;
 };
-
