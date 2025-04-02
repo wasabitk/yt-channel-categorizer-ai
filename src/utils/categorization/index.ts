@@ -29,11 +29,15 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     const videoId = extractVideoId(channel.url);
     console.log(`Extracted video ID: ${videoId || 'None'}`);
     
+    // Log the known video IDs for debugging
+    console.log("Known video IDs:", JSON.stringify(knownVideoIds));
+    
     // If we have a video ID and it's in our known video IDs, use that category
     if (videoId && knownVideoIds[videoId]) {
-      console.log(`Matched known video ID ${videoId} to category ${knownVideoIds[videoId]}`);
+      const category = knownVideoIds[videoId];
+      console.log(`Matched known video ID ${videoId} to category ${category}`);
       channel.brandName = brandName;
-      return knownVideoIds[videoId];
+      return category;
     }
     
     // Check if the URL directly contains any of our known video IDs (backup method)
@@ -132,4 +136,3 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     return "Other";
   }
 };
-

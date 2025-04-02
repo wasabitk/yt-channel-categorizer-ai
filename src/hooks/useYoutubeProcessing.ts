@@ -30,16 +30,22 @@ export const useYoutubeProcessing = () => {
     // Process each channel sequentially to avoid rate limiting
     for (let i = 0; i < updatedChannels.length; i++) {
       try {
+        // Store original URL for debugging and reference
+        const originalUrl = updatedChannels[i].url;
+        
         // Check if it's a video URL
-        const isVideoUrl = updatedChannels[i].url.includes("youtube.com/watch") || 
-                         updatedChannels[i].url.includes("youtu.be/");
+        const isVideoUrl = originalUrl.includes("youtube.com/watch") || 
+                         originalUrl.includes("youtu.be/");
         
         // Update status to processing
-        updatedChannels[i] = { ...updatedChannels[i], status: 'processing' };
+        updatedChannels[i] = { ...updatedChannels[i], status: 'processing', originalUrl };
         setChannels(updatedChannels.slice());
         
         // Fetch channel details from YouTube API
         const channelWithDetails = await getChannelDetails(updatedChannels[i]);
+        
+        // Preserve the original URL after getting channel details
+        channelWithDetails.originalUrl = originalUrl;
         
         if (channelWithDetails.status === 'error') {
           // Check if the error is due to quota exceeded
@@ -57,11 +63,18 @@ export const useYoutubeProcessing = () => {
           toast.success(`Successfully extracted channel from video: ${channelWithDetails.name}`);
         }
         
+        // When categorizing, use the original URL for video ID extraction
+        // This ensures video IDs are properly detected
+        if (isVideoUrl) {
+          channelWithDetails.url = originalUrl;
+          console.log(`Using original video URL for categorization: ${originalUrl}`);
+        }
+        
         // Categorize the channel using OpenAI
         const category = await categorizeChannel(channelWithDetails);
         
         // Update the channel with the category and status
-        updatedChannels[i] = { ...channelWithDetails, category, status: 'completed' };
+        updatedChannels[i] = { ...channelWithDetails, category, status: 'completed', originalUrl };
         setChannels(updatedChannels.slice());
       } catch (error) {
         console.error(`Error processing channel ${updatedChannels[i].name}:`, error);
