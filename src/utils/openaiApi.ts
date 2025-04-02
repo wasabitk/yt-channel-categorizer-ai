@@ -50,13 +50,27 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     const knownChannelIds: Record<string, Category> = {
       "UCazRf1jcMNZEL1MS5i_rWQQ": "Police Cam Footage", // Real World Police
       "UCJWKjrrUh2KL1d3zXQW79cQ": "Police Cam Footage", // New Police Cam Footage channel
-      "UCTuDW_RrS0Di2L7CsJfFOnA": "True Crime or Mystery" // Yep The Boys channel ID
+      "UCTuDW_RrS0Di2L7CsJfFOnA": "True Crime or Mystery", // Yep The Boys channel ID
+      "UCsvqVGtbbyHaMoevxPAq9Fg": "Internet Reacts / Internet Gossip" // Internet Reacts example (z1sKwev21gE video)
     };
     
     // Check if the URL contains any of our known channel IDs
     for (const [channelId, category] of Object.entries(knownChannelIds)) {
       if (channel.url && channel.url.includes(channelId)) {
         console.log(`Detected known channel by ID (${channelId}), overriding category to ${category}`);
+        return category;
+      }
+    }
+    
+    // Also check for specific video IDs that we know belong to certain categories
+    const knownVideoIds: Record<string, Category> = {
+      "z1sKwev21gE": "Internet Reacts / Internet Gossip" // The specific video mentioned
+    };
+    
+    // Check if the URL contains any of our known video IDs
+    for (const [videoId, category] of Object.entries(knownVideoIds)) {
+      if (channel.url && channel.url.includes(videoId)) {
+        console.log(`Detected known video by ID (${videoId}), overriding category to ${category}`);
         return category;
       }
     }
