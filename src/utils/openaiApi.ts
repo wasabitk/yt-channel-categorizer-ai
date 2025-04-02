@@ -27,7 +27,9 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       "Military Aviation History": "Guns / Military",
       "@MilitaryAviationHistory": "Guns / Military",
       "Law By Mike": "Police Cam Footage",
-      "@lawbymike": "Police Cam Footage"
+      "@lawbymike": "Police Cam Footage",
+      "Real World Police": "Police Cam Footage",
+      "@realworldpolice": "Police Cam Footage"
       // Add more known channels here as needed
     };
     
