@@ -39,6 +39,7 @@ export const knownChannelIds: Record<string, Category> = {
  */
 export const knownVideoIds: Record<string, Category> = {
   "z1sKwev21gE": "Internet Reacts / Internet Gossip", // Specific Internet Reacts video
-  "v32NRpqRFoU": "Internet Reacts / Internet Gossip"  // Another Internet Reacts video example
+  "v32NRpqRFoU": "Internet Reacts / Internet Gossip",  // Another Internet Reacts video example
+  "kcda94R0Pcw": "Internet Reacts / Internet Gossip"  // J Aubrey video about Internet drama
 };
 
