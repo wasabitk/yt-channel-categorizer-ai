@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
-import { Upload } from "lucide-react";
+import { Upload, FileType } from "lucide-react";
 import { toast } from "sonner";
 
 interface FileUploadProps {
@@ -10,6 +10,7 @@ interface FileUploadProps {
 
 const FileUpload = ({ onFileUploaded }: FileUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -39,13 +40,22 @@ const FileUpload = ({ onFileUploaded }: FileUploadProps) => {
   };
 
   const validateAndProcessFile = (file: File) => {
-    if (file.type !== 'text/csv') {
+    // Check file extension
+    const fileName = file.name.toLowerCase();
+    
+    if (!fileName.endsWith('.csv')) {
       toast.error('Please upload a CSV file');
       return;
     }
 
+    // Additional validation for file size if needed
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      toast.error('File is too large. Please upload a file smaller than 10MB');
+      return;
+    }
+
+    toast.info('Processing CSV file...');
     onFileUploaded(file);
-    toast.success('CSV file uploaded successfully');
   };
 
   const handleButtonClick = () => {
@@ -54,12 +64,18 @@ const FileUpload = ({ onFileUploaded }: FileUploadProps) => {
 
   return (
     <div
-      className={`border-2 border-dashed rounded-lg p-8 text-center ${
-        isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
-      } transition-colors`}
+      className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+        isDragging 
+          ? 'border-primary bg-primary/5' 
+          : isHovering 
+            ? 'border-primary/50' 
+            : 'border-muted-foreground/25'
+      }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
       <input
         type="file"
@@ -71,7 +87,7 @@ const FileUpload = ({ onFileUploaded }: FileUploadProps) => {
 
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="bg-primary/10 p-4 rounded-full">
-          <Upload className="h-8 w-8 text-primary" />
+          <FileType className="h-8 w-8 text-primary" />
         </div>
         <div>
           <h3 className="text-lg font-semibold">Upload your CSV file</h3>
@@ -82,9 +98,10 @@ const FileUpload = ({ onFileUploaded }: FileUploadProps) => {
         <Button onClick={handleButtonClick} variant="outline">
           Browse Files
         </Button>
-        <p className="text-xs text-muted-foreground">
-          CSV must contain "Channel URL" and "Channel Name" columns
-        </p>
+        <div className="text-xs text-muted-foreground space-y-2">
+          <p>CSV must contain columns for channel URL and name</p>
+          <p>Accepted column names: "Channel URL", "URL", "Channel Name", "Name", etc.</p>
+        </div>
       </div>
     </div>
   );
