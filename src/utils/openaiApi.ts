@@ -1,3 +1,4 @@
+
 import { Category, YoutubeChannel, BrandName } from "@/types";
 import { OPENAI_API_KEY, getCategoriesForBrand, getSelectedBrand } from "./constants";
 import { getRecentVideos, extractChannelId } from "./youtube";
@@ -44,7 +45,7 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     }
     
     // Check for specific channel IDs we know should be categorized a certain way
-    const knownChannelIds = {
+    const knownChannelIds: Record<string, Category> = {
       "UCazRf1jcMNZEL1MS5i_rWQQ": "Police Cam Footage", // Real World Police
       "UCJWKjrrUh2KL1d3zXQW79cQ": "Police Cam Footage" // New Police Cam Footage channel
     };
