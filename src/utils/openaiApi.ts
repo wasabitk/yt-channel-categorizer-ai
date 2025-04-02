@@ -1,4 +1,3 @@
-
 import { Category, YoutubeChannel, BrandName } from "@/types";
 import { OPENAI_API_KEY, getCategoriesForBrand, getSelectedBrand } from "./constants";
 import { getRecentVideos, extractChannelId } from "./youtube";
@@ -46,6 +45,22 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       }
     }
     
+    // Check for specific video IDs that we know belong to certain categories
+    // Do this check before channel ID check since video IDs are more specific
+    const knownVideoIds: Record<string, Category> = {
+      "z1sKwev21gE": "Internet Reacts / Internet Gossip" // The specific video mentioned
+    };
+    
+    // First, check if the URL contains any of our known video IDs
+    for (const [videoId, category] of Object.entries(knownVideoIds)) {
+      if (channel.url && channel.url.includes(videoId)) {
+        console.log(`Detected known video by ID (${videoId}), overriding category to ${category}`);
+        // Store the brand name on the channel for reference
+        channel.brandName = brandName;
+        return category;
+      }
+    }
+    
     // Check for specific channel IDs we know should be categorized a certain way
     const knownChannelIds: Record<string, Category> = {
       "UCazRf1jcMNZEL1MS5i_rWQQ": "Police Cam Footage", // Real World Police
@@ -58,19 +73,8 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     for (const [channelId, category] of Object.entries(knownChannelIds)) {
       if (channel.url && channel.url.includes(channelId)) {
         console.log(`Detected known channel by ID (${channelId}), overriding category to ${category}`);
-        return category;
-      }
-    }
-    
-    // Also check for specific video IDs that we know belong to certain categories
-    const knownVideoIds: Record<string, Category> = {
-      "z1sKwev21gE": "Internet Reacts / Internet Gossip" // The specific video mentioned
-    };
-    
-    // Check if the URL contains any of our known video IDs
-    for (const [videoId, category] of Object.entries(knownVideoIds)) {
-      if (channel.url && channel.url.includes(videoId)) {
-        console.log(`Detected known video by ID (${videoId}), overriding category to ${category}`);
+        // Store the brand name on the channel for reference
+        channel.brandName = brandName;
         return category;
       }
     }
@@ -86,9 +90,23 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
           const override = knownChannels[handle];
           if (categories.some(cat => cat.name === override)) {
             console.log(`Using known category override for handle ${handle}: ${knownChannels[handle]}`);
+            // Store the brand name on the channel for reference
+            channel.brandName = brandName;
             return knownChannels[handle];
           }
         }
+      }
+    }
+    
+    // Extract video ID from URL if it's a video URL
+    const videoIdMatch = channel.url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s?]+)/);
+    if (videoIdMatch && videoIdMatch[1]) {
+      const videoId = videoIdMatch[1];
+      if (knownVideoIds[videoId]) {
+        console.log(`Detected known video by extracted ID (${videoId}), overriding category to ${knownVideoIds[videoId]}`);
+        // Store the brand name on the channel for reference
+        channel.brandName = brandName;
+        return knownVideoIds[videoId];
       }
     }
     
