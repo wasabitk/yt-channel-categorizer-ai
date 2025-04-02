@@ -1,4 +1,3 @@
-
 import { Category, YoutubeChannel, BrandName } from "@/types";
 import { OPENAI_API_KEY, getCategoriesForBrand, getSelectedBrand } from "./constants";
 import { getRecentVideos, extractChannelId } from "./youtube";
@@ -44,10 +43,18 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       }
     }
     
-    // Check for URL containing the specific Real World Police channel ID
-    if (channel.url && channel.url.includes("UCazRf1jcMNZEL1MS5i_rWQQ")) {
-      console.log("Detected Real World Police channel by ID, overriding category");
-      return "Police Cam Footage";
+    // Check for specific channel IDs we know should be categorized a certain way
+    const knownChannelIds = {
+      "UCazRf1jcMNZEL1MS5i_rWQQ": "Police Cam Footage", // Real World Police
+      "UCJWKjrrUh2KL1d3zXQW79cQ": "Police Cam Footage" // New Police Cam Footage channel
+    };
+    
+    // Check if the URL contains any of our known channel IDs
+    for (const [channelId, category] of Object.entries(knownChannelIds)) {
+      if (channel.url && channel.url.includes(channelId)) {
+        console.log(`Detected known channel by ID (${channelId}), overriding category to ${category}`);
+        return category;
+      }
     }
     
     // Also check for handle matches
