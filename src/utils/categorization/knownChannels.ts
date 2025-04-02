@@ -35,7 +35,9 @@ export const knownChannelIds: Record<string, Category> = {
 
 /**
  * Map of known video IDs to their respective categories
+ * Important: These are the exact video IDs that appear in YouTube URLs
  */
 export const knownVideoIds: Record<string, Category> = {
   "z1sKwev21gE": "Internet Reacts / Internet Gossip" // Specific Internet Reacts video
 };
+

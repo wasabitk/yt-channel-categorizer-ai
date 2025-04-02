@@ -23,6 +23,30 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     // Get the brand for this channel (use the channel's brand or the currently selected brand)
     const brandName = channel.brandName || getSelectedBrand();
     
+    console.log(`Categorizing channel: ${channel.name || 'Unknown'}, URL: ${channel.url}`);
+    
+    // FIRST STEP: Check if this is a video URL and extract the video ID
+    const videoId = extractVideoId(channel.url);
+    console.log(`Extracted video ID: ${videoId || 'None'}`);
+    
+    // If we have a video ID and it's in our known video IDs, use that category
+    if (videoId && knownVideoIds[videoId]) {
+      console.log(`Matched known video ID ${videoId} to category ${knownVideoIds[videoId]}`);
+      channel.brandName = brandName;
+      return knownVideoIds[videoId];
+    }
+    
+    // Check if the URL directly contains any of our known video IDs (backup method)
+    if (channel.url) {
+      for (const [knownId, category] of Object.entries(knownVideoIds)) {
+        if (channel.url.includes(knownId)) {
+          console.log(`URL contains known video ID ${knownId}, using category ${category}`);
+          channel.brandName = brandName;
+          return category;
+        }
+      }
+    }
+    
     // Check if this is a known channel that should have a specific category
     if (channel.name && knownChannels[channel.name]) {
       // Only use the override if that category exists for the current brand
@@ -32,15 +56,6 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
         console.log(`Using known category override for ${channel.name}: ${knownChannels[channel.name]}`);
         channel.brandName = brandName;
         return knownChannels[channel.name];
-      }
-    }
-    
-    // First, check if the URL contains any of our known video IDs
-    for (const [videoId, category] of Object.entries(knownVideoIds)) {
-      if (channel.url && channel.url.includes(videoId)) {
-        console.log(`Detected known video by ID (${videoId}), overriding category to ${category}`);
-        channel.brandName = brandName;
-        return category;
       }
     }
     
@@ -69,14 +84,6 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
           }
         }
       }
-    }
-    
-    // Extract video ID from URL if it's a video URL
-    const videoId = extractVideoId(channel.url);
-    if (videoId && knownVideoIds[videoId]) {
-      console.log(`Detected known video by extracted ID (${videoId}), overriding category to ${knownVideoIds[videoId]}`);
-      channel.brandName = brandName;
-      return knownVideoIds[videoId];
     }
     
     // Fetch recent video titles to include in the analysis
@@ -125,3 +132,4 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     return "Other";
   }
 };
+

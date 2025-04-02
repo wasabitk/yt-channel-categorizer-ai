@@ -7,10 +7,22 @@ export const extractVideoId = (url?: string): string | null => {
     return null;
   }
   
-  const videoIdMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s?]+)/);
-  if (videoIdMatch && videoIdMatch[1]) {
-    return videoIdMatch[1];
+  // More specific regex to extract video ID from different YouTube URL formats
+  const videoIdRegexes = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s?]+)/,
+    /(?:youtube\.com\/embed\/)([^&\s?]+)/,
+    /(?:youtube\.com\/v\/)([^&\s?]+)/
+  ];
+  
+  for (const regex of videoIdRegexes) {
+    const match = url.match(regex);
+    if (match && match[1]) {
+      console.log(`Successfully extracted video ID: ${match[1]} from URL: ${url}`);
+      return match[1];
+    }
   }
   
+  console.log(`Failed to extract video ID from URL: ${url}`);
   return null;
 };
+

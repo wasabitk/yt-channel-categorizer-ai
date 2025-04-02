@@ -1,5 +1,6 @@
 
 /**
- * Re-export the categorization functions
+ * Re-export the categorization function
  */
 export { categorizeChannel } from "./categorization";
+
