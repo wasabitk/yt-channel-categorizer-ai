@@ -1,3 +1,4 @@
+
 export type BrandName = "Aura";
 
 export interface Brand {
@@ -17,6 +18,7 @@ export type Category =
   | "Fashion & Beauty"
   | "Tech Reviews"
   | "Travel"
+  | "Police Cam Footage"
   | "Other";
 
 export interface CategoryDescription {

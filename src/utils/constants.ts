@@ -1,3 +1,4 @@
+
 import { Brand, CategoryDescription, BrandName } from "@/types";
 
 // Aura brand categories (original categories)
@@ -29,6 +30,10 @@ const AURA_CATEGORIES: CategoryDescription[] = [
   {
     name: "Cars",
     description: "In this content category, YouTube creators will document themselves working on cars or test driving and reviewing cars."
+  },
+  {
+    name: "Police Cam Footage",
+    description: "In this content category, YouTube creators watch police body cam footage and provide their commentary"
   },
   {
     name: "Other",
