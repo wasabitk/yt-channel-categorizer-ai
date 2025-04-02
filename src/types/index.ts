@@ -1,8 +1,4 @@
-
-export type BrandName = 
-  | "Aura"
-  | "Gaming Inc"
-  | "Fashion Hub";
+export type BrandName = "Aura";
 
 export interface Brand {
   name: BrandName;

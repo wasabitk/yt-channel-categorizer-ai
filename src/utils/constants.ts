@@ -1,4 +1,3 @@
-
 import { Brand, CategoryDescription, BrandName } from "@/types";
 
 // Aura brand categories (original categories)
@@ -37,59 +36,11 @@ const AURA_CATEGORIES: CategoryDescription[] = [
   }
 ];
 
-// Gaming Inc brand categories
-const GAMING_CATEGORIES: CategoryDescription[] = [
-  {
-    name: "Gaming",
-    description: "YouTube creators who play video games, provide game reviews, walkthroughs, or gaming-related content."
-  },
-  {
-    name: "Tech Reviews",
-    description: "YouTube creators who review gaming hardware, peripherals, or other technology products."
-  },
-  {
-    name: "Internet Reacts / Internet Gossip",
-    description: "Gaming influencers or channels that react to gaming news, drama, or industry developments."
-  },
-  {
-    name: "Other",
-    description: "Any content that doesn't fit into the specific gaming-related categories above."
-  }
-];
-
-// Fashion Hub brand categories
-const FASHION_CATEGORIES: CategoryDescription[] = [
-  {
-    name: "Fashion & Beauty",
-    description: "YouTube creators who showcase fashion trends, beauty products, makeup tutorials, or clothing hauls."
-  },
-  {
-    name: "Internet Reacts / Internet Gossip",
-    description: "Channels that react to fashion events, celebrity outfits, or industry news."
-  },
-  {
-    name: "Travel",
-    description: "Fashion-focused travel content, destination fashion guides, or travel lookbooks."
-  },
-  {
-    name: "Other",
-    description: "Content that doesn't align with the fashion-specific categories above."
-  }
-];
-
-// All available brands
+// For now, only include Aura in the BRANDS array
 export const BRANDS: Brand[] = [
   {
     name: "Aura",
     categories: AURA_CATEGORIES
-  },
-  {
-    name: "Gaming Inc",
-    categories: GAMING_CATEGORIES
-  },
-  {
-    name: "Fashion Hub",
-    categories: FASHION_CATEGORIES
   }
 ];
 
