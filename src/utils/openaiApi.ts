@@ -44,6 +44,12 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       }
     }
     
+    // Check for URL containing the specific Real World Police channel ID
+    if (channel.url && channel.url.includes("UCazRf1jcMNZEL1MS5i_rWQQ")) {
+      console.log("Detected Real World Police channel by ID, overriding category");
+      return "Police Cam Footage";
+    }
+    
     // Also check for handle matches
     if (channel.url) {
       const handleMatch = channel.url.match(/@([^\/\s?]+)/);
@@ -80,6 +86,24 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       console.warn("Failed to fetch recent videos, proceeding with basic info", error);
     }
     
+    // Check if the video titles strongly indicate Police Cam Footage content
+    const policeCamKeywords = [
+      "bodycam", "body cam", "police cam", "officer", "arrest", "dashcam", 
+      "dash cam", "police footage", "body camera", "police shooting", 
+      "police video", "officer involved", "use of force"
+    ];
+    
+    const matchingPoliceCamKeywords = recentVideoTitles.filter(title => 
+      policeCamKeywords.some(keyword => title.toLowerCase().includes(keyword.toLowerCase()))
+    );
+    
+    // If a significant portion of videos match police cam keywords, override the category
+    if (matchingPoliceCamKeywords.length >= 3 || 
+        (recentVideoTitles.length > 0 && matchingPoliceCamKeywords.length / recentVideoTitles.length >= 0.4)) {
+      console.log("Detected Police Cam Footage content based on video titles");
+      return "Police Cam Footage";
+    }
+    
     // Get categories for the selected brand
     const brandCategories = getCategoriesForBrand(brandName);
     const categoryDescriptions = brandCategories.map(cat => 
@@ -112,6 +136,8 @@ Note that political commentary channels should be categorized as either "Politic
 If the channel discusses strange, dark, or mysterious topics, unsolved mysteries, true crime, conspiracy theories, or horror stories, it should be categorized as "True Crime or Mystery".
 
 If the channel is focused on military topics, weapons, firearms, aviation history, combat footage, defense systems, armed forces, military history, military technology, or similar content, it should be categorized as "Guns / Military". This includes channels about aircraft, tanks, naval vessels, and other military equipment, even if they don't directly show people firing guns.
+
+If the channel features police body camera footage, dash cam videos, police chase videos, arrest videos, or commentaries on police incidents captured on camera, it should be categorized as "Police Cam Footage".
 `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
