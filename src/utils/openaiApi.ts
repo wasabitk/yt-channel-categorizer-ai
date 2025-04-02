@@ -29,7 +29,9 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
       "Law By Mike": "Police Cam Footage",
       "@lawbymike": "Police Cam Footage",
       "Real World Police": "Police Cam Footage",
-      "@realworldpolice": "Police Cam Footage"
+      "@realworldpolice": "Police Cam Footage",
+      "Yep The Boys": "True Crime or Mystery",
+      "@yeptheboys": "True Crime or Mystery"
       // Add more known channels here as needed
     };
     
@@ -47,7 +49,8 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     // Check for specific channel IDs we know should be categorized a certain way
     const knownChannelIds: Record<string, Category> = {
       "UCazRf1jcMNZEL1MS5i_rWQQ": "Police Cam Footage", // Real World Police
-      "UCJWKjrrUh2KL1d3zXQW79cQ": "Police Cam Footage" // New Police Cam Footage channel
+      "UCJWKjrrUh2KL1d3zXQW79cQ": "Police Cam Footage", // New Police Cam Footage channel
+      "UCTuDW_RrS0Di2L7CsJfFOnA": "True Crime or Mystery" // Yep The Boys channel ID
     };
     
     // Check if the URL contains any of our known channel IDs
