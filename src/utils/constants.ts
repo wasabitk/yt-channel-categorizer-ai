@@ -41,11 +41,63 @@ const AURA_CATEGORIES: CategoryDescription[] = [
   }
 ];
 
-// For now, only include Aura in the BRANDS array
+// BetterHelp brand categories
+const BETTERHELP_CATEGORIES: CategoryDescription[] = [
+  {
+    name: "Female Lifestyle",
+    description: "Female Lifestyle is a content category where female creators share personal, day-to-day experiences centered around modern womanhood. Typical content includes fashion choices, daily routines, meal prep or what they eat in a day, makeup and skincare routines, apartment or home tours, and updates about their personal lives (e.g., moving, relationships, career changes). Videos often focus on themes of independence, self-care, personal growth, and navigating adult life as a woman. The tone is usually relatable, aspirational, or conversational, aiming to connect with viewers through authenticity and shared life stages. This category blends elements of vlog-style storytelling, beauty, wellness, and lifestyle advice."
+  },
+  {
+    name: "Male Lifestyle",
+    description: "Male Lifestyle is a content category where male creators share aspects of their personal lives, routines, and interests through vlog-style or commentary-driven videos centered on self-improvement, productivity, fitness, fashion, grooming, dating, or career growth. These creators often give advice, walk through their daily routines, show what they wear, how they train, how they structure their day, or speak about personal challenges and goals as men navigating adulthood. The focus is on sharing their perspective as modern men working to level up physically, mentally, and socially."
+  },
+  {
+    name: "Tarot / Spiritual",
+    description: "Tarot / Spiritual is a content category where creators guide viewers through topics like tarot readings, astrology, manifestation, energy healing, and other spiritual or metaphysical practices. These creators often use tools like tarot cards, crystals, or astrology charts to help viewers gain insight into their emotions, relationships, or future. The tone is introspective, supportive, and focused on personal growth, healing, or spiritual awakening. Content is typically centered on intuition and helping others navigate life through a spiritual lens."
+  },
+  {
+    name: "Doctor / Healthcare Professional",
+    description: "Doctor / Healthcare Professional is a content category where licensed medical experts or healthcare professionals create educational content around physical and mental health, wellness, disease prevention, and medical myths. These creators often explain symptoms, break down medical studies, react to health trends from a clinical perspective, or share tips for healthier living. The content is authoritative, informative, and focused on improving the viewer's well-being through verified medical knowledge."
+  },
+  {
+    name: "Fitness",
+    description: "Fitness is a content category where creators focus on physical health, sharing workouts, training routines, nutrition advice, fitness challenges, and personal transformation journeys. These creators often walk viewers through exercises, explain fitness techniques, discuss gym culture, or offer motivation for building discipline and achieving physical goals. The content is action-oriented and centered on improving the body and mindset through consistent effort."
+  },
+  {
+    name: "True Crime / Mystery",
+    description: "True Crime / Mystery is a content category where creators research and narrate real-life cases involving crime, disappearances, unsolved mysteries, and disturbing events. These videos are often scripted, heavily researched, and focus on storytelling—walking viewers through timelines, suspects, evidence, and theories with a serious or investigative tone. The goal is to inform, engage curiosity, and sometimes seek justice or awareness."
+  },
+  {
+    name: "ASMR",
+    description: "ASMR (Autonomous Sensory Meridian Response) is a content category where creators use soft auditory and visual triggers to elicit a calming, tingling sensation in viewers. Common triggers include whispering, tapping, brushing, crinkling, and gentle hand movements, often recorded with high-sensitivity microphones for immersive sound. Creators frequently produce roleplay-style videos (e.g., spa visits, medical exams, or personal attention scenarios) that combine soothing tones with detailed, slow-paced interaction. The primary goals of ASMR content are to help viewers relax, fall asleep, reduce anxiety, or feel comforted. The genre is characterized by quiet, intimate production, and often includes visual close-ups and slow, deliberate actions."
+  },
+  {
+    name: "Internet Reacts / Internet Gossip",
+    description: "Internet Reacts / Internet Gossip is a content category where creators give their opinions, reactions, or commentary on trending internet topics, viral videos, influencer drama, celebrity news, or cultural moments. These videos are usually unscripted, personality-driven, and centered around the creator's take on events happening outside of their own life. The content is fast-paced, conversational, and focused on engaging with what's currently buzzing online."
+  },
+  {
+    name: "News/Politics",
+    description: "News / Politics is a content category where creators share commentary, analysis, or reporting on current events, political figures, legislation, social issues, or cultural debates. These creators often present content through a specific ideological lens—either left-leaning or right-leaning—and aim to inform, persuade, or provoke thought on real-world issues that impact society. Videos are usually research-based or opinion-driven, but rooted in actual news or policy."
+  },
+  {
+    name: "Movies / Film / Pop Culture",
+    description: "Movies / Film / Pop Culture is a content category where creators analyze, critique, or discuss films, TV shows, celebrity culture, and entertainment industry trends. These videos often include reviews, breakdowns of scenes or themes, rankings, or commentary on storytelling and character development. The focus is on structured media, not spontaneous viral content."
+  },
+  {
+    name: "Other",
+    description: "If a content creator does not fit any of the categories above, consider them 'Other'."
+  }
+];
+
+// Add both brands to the BRANDS array
 export const BRANDS: Brand[] = [
   {
     name: "Aura",
     categories: AURA_CATEGORIES
+  },
+  {
+    name: "BetterHelp",
+    categories: BETTERHELP_CATEGORIES
   }
 ];
 

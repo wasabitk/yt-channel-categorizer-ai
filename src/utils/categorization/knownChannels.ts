@@ -6,6 +6,7 @@ import { Category } from "@/types";
  * Used to override AI categorization for channels we know are often miscategorized
  */
 export const knownChannels: Record<string, Category> = {
+  // Aura categorizations
   "Benaminute": "Politics / News (Left Wing)",
   "@itsbenaminute": "Politics / News (Left Wing)",
   "Wendigoon": "True Crime or Mystery",
@@ -20,7 +21,27 @@ export const knownChannels: Record<string, Category> = {
   "Real World Police": "Police Cam Footage",
   "@realworldpolice": "Police Cam Footage",
   "Yep The Boys": "True Crime or Mystery",
-  "@yeptheboys": "True Crime or Mystery"
+  "@yeptheboys": "True Crime or Mystery",
+  
+  // BetterHelp categorizations
+  "WhispersRed ASMR": "ASMR",
+  "@WhispersRedASMR": "ASMR",
+  "ASMR Darling": "ASMR",
+  "@ASMRDarling": "ASMR",
+  "Gentle Whispering ASMR": "ASMR",
+  "@GentleWhisperingASMR": "ASMR",
+  "ATHLEAN-X": "Fitness",
+  "@ATHLEANX": "Fitness",
+  "Jeremy Ethier": "Fitness",
+  "@JeremyEthier": "Fitness",
+  "Doctor Mike": "Doctor / Healthcare Professional",
+  "@DoctorMike": "Doctor / Healthcare Professional",
+  "Mama Doctor Jones": "Doctor / Healthcare Professional",
+  "@MamaDoctorJones": "Doctor / Healthcare Professional",
+  "Alexandra Gater": "Female Lifestyle",
+  "@AlexandraGater": "Female Lifestyle",
+  "Modern Therapy": "Male Lifestyle",
+  "@ModernTherapy": "Male Lifestyle"
 };
 
 /**
@@ -30,7 +51,9 @@ export const knownChannelIds: Record<string, Category> = {
   "UCazRf1jcMNZEL1MS5i_rWQQ": "Police Cam Footage", // Real World Police
   "UCJWKjrrUh2KL1d3zXQW79cQ": "Police Cam Footage", // New Police Cam Footage channel
   "UCTuDW_RrS0Di2L7CsJfFOnA": "True Crime or Mystery", // Yep The Boys channel ID
-  "UCsvqVGtbbyHaMoevxPAq9Fg": "Internet Reacts / Internet Gossip" // Internet Reacts example
+  "UCsvqVGtbbyHaMoevxPAq9Fg": "Internet Reacts / Internet Gossip", // Internet Reacts example
+  "UCzx9GfbcHseFYYc0jcEqImA": "ASMR", // ASMR Darling channel ID
+  "UC2eddeJoyTIzdlHdDhRvmRw": "Doctor / Healthcare Professional" // Doctor Mike channel ID
 };
 
 /**
@@ -40,6 +63,8 @@ export const knownChannelIds: Record<string, Category> = {
 export const knownVideoIds: Record<string, Category> = {
   "z1sKwev21gE": "Internet Reacts / Internet Gossip", // Specific Internet Reacts video
   "v32NRpqRFoU": "Internet Reacts / Internet Gossip",  // Another Internet Reacts video example
-  "kcda94R0Pcw": "Internet Reacts / Internet Gossip"  // J Aubrey video about Internet drama
+  "kcda94R0Pcw": "Internet Reacts / Internet Gossip",  // J Aubrey video about Internet drama
+  "9j53D4o0CfQ": "ASMR", // Popular ASMR video
+  "4Jt9_adxzdA": "Male Lifestyle", // Male lifestyle video
+  "7jYYHawqy4Y": "Fitness" // Fitness video
 };
-

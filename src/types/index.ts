@@ -1,5 +1,5 @@
 
-export type BrandName = "Aura";
+export type BrandName = "Aura" | "BetterHelp";
 
 export interface Brand {
   name: BrandName;
@@ -19,7 +19,16 @@ export type Category =
   | "Tech Reviews"
   | "Travel"
   | "Police Cam Footage"
-  | "Other";
+  | "Other"
+  // BetterHelp categories
+  | "Female Lifestyle"
+  | "Male Lifestyle"
+  | "Tarot / Spiritual"
+  | "Doctor / Healthcare Professional"
+  | "Fitness"
+  | "ASMR"
+  | "News/Politics"
+  | "Movies / Film / Pop Culture";
 
 export interface CategoryDescription {
   name: Category;
