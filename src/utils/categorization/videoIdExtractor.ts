@@ -29,4 +29,3 @@ export const extractVideoId = (url?: string): string | null => {
   console.log(`Failed to extract video ID from URL: ${url}`);
   return null;
 };
-

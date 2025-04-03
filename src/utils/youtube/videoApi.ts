@@ -27,6 +27,7 @@ export const getVideoDetails = async (videoId: string): Promise<{channelId: stri
     }
     
     const videoData = data.items[0].snippet;
+    console.log(`Found channel ID ${videoData.channelId} for video ${videoId}`);
     return {
       channelId: videoData.channelId,
       channelTitle: videoData.channelTitle

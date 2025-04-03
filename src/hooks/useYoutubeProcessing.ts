@@ -4,6 +4,8 @@ import { YoutubeChannel } from "@/types";
 import { getChannelDetails } from "@/utils/youtube";
 import { categorizeChannel } from "@/utils/openaiApi";
 import { toast } from "sonner";
+import { extractVideoId } from "@/utils/categorization/videoIdExtractor";
+import { getVideoDetails } from "@/utils/youtube/videoApi";
 
 export const useYoutubeProcessing = () => {
   const [channels, setChannels] = useState<YoutubeChannel[]>([]);
@@ -33,7 +35,29 @@ export const useYoutubeProcessing = () => {
         // Store original URL for debugging and reference
         const originalUrl = updatedChannels[i].url;
         
-        // Check if it's a video URL
+        // Pre-process YouTube Shorts URLs to get video details first
+        if (originalUrl.includes("youtube.com/shorts/")) {
+          const videoId = extractVideoId(originalUrl);
+          if (videoId) {
+            toast.info("Processing YouTube Short. Getting video details...");
+            console.log(`Processing Shorts URL with video ID: ${videoId}`);
+            
+            const videoDetails = await getVideoDetails(videoId);
+            if (!videoDetails) {
+              throw new Error("Could not extract channel details from this YouTube Short");
+            }
+            
+            // Update the URL to the channel URL for processing
+            console.log(`Found channel ID ${videoDetails.channelId} from Shorts video`);
+            updatedChannels[i].url = `https://www.youtube.com/channel/${videoDetails.channelId}`;
+            updatedChannels[i].name = videoDetails.channelTitle || "Retrieved from Shorts";
+            updatedChannels[i].originalUrl = originalUrl; // Save original shorts URL
+            
+            toast.success(`Found channel: ${videoDetails.channelTitle}`);
+          }
+        }
+        
+        // Check if it's a standard video URL
         const isVideoUrl = originalUrl.includes("youtube.com/watch") || 
                          originalUrl.includes("youtu.be/");
         
@@ -64,13 +88,13 @@ export const useYoutubeProcessing = () => {
         }
         
         // If this was a video URL, show a message
-        if (isVideoUrl && !channelWithDetails.error) {
+        if ((isVideoUrl || originalUrl.includes("shorts")) && !channelWithDetails.error) {
           toast.success(`Successfully extracted channel from video: ${channelWithDetails.name}`);
         }
         
         // When categorizing, use the original URL for video ID extraction
         // This ensures video IDs are properly detected
-        if (isVideoUrl) {
+        if (isVideoUrl || originalUrl.includes("shorts")) {
           channelWithDetails.url = originalUrl;
           console.log(`Using original video URL for categorization: ${originalUrl}`);
         }
