@@ -19,15 +19,16 @@ export const extractChannelId = (url: string): string | null => {
   
   // Try to extract channel ID from channel URL
   const urlPatterns = [
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/channel\/([^\/\s?]+)/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/c\/([^\/\s?]+)/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/user\/([^\/\s?]+)/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/@([^\/\s?]+)/
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/channel\/([^\/\s?]+)/, // Standard channel ID format
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/c\/([^\/\s?]+)/,       // Custom URL format
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/user\/([^\/\s?]+)/,    // Legacy username format
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/@([^\/\s?]+)/          // Handle format
   ];
   
   for (const pattern of urlPatterns) {
     const match = url.match(pattern);
     if (match && match[1]) {
+      console.log(`Matched URL pattern: ${pattern}, extracted: ${match[1]}`);
       id = match[1];
       break;
     }
@@ -40,9 +41,19 @@ export const extractChannelId = (url: string): string | null => {
       const handleMatch = url.match(/@([^\/\s?]+)/);
       if (handleMatch && handleMatch[1]) {
         id = handleMatch[1];
+        console.log(`Extracted handle: @${id}`);
       }
     } catch (error) {
       console.error("Error extracting handle:", error);
+    }
+  }
+  
+  // For /c/ or /user/ URLs, return the custom URL part directly
+  if (!id && (url.includes('/c/') || url.includes('/user/'))) {
+    const customUrlMatch = url.match(/(?:\/c\/|\/user\/)([^\/\s?]+)/);
+    if (customUrlMatch && customUrlMatch[1]) {
+      id = customUrlMatch[1];
+      console.log(`Extracted custom URL part: ${id}`);
     }
   }
   

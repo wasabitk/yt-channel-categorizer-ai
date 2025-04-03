@@ -42,6 +42,8 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
     // Show a toast if this is a video URL
     if (isVideoUrl(youtubeUrl)) {
       toast.info("Detected a video URL. Extracting channel information...");
+    } else if (youtubeUrl.includes('/c/') || youtubeUrl.includes('/user/')) {
+      toast.info("Processing custom channel URL...");
     }
     
     try {
@@ -88,14 +90,14 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
           <AlertTitle>Error Processing URL</AlertTitle>
           <AlertDescription>
             {lastError.includes("Channel not found") 
-              ? "The channel could not be found. Please check the URL and try again. Make sure the channel is public and accessible."
+              ? "The channel could not be found. Please check the URL and try again. Make sure the channel is public and accessible. If using a custom URL format (like /c/ or /user/), try the @handle format instead."
               : lastError}
           </AlertDescription>
         </Alert>
       )}
       
       <p className="text-xs text-muted-foreground">
-        Enter a YouTube channel URL or video URL to analyze and categorize the channel
+        Enter a YouTube channel URL (youtube.com/channel/ID, youtube.com/c/name, youtube.com/@handle) or video URL to analyze and categorize the channel
       </p>
     </div>
   );

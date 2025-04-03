@@ -30,19 +30,34 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
         throw new Error("Could not extract channel from video. The video might be private or removed.");
       }
     } else {
-      // First get the channel ID if the input is a custom URL
+      // First get the channel ID or custom URL from the input
       channelId = extractChannelId(channel.url);
+      console.log(`Extracted channel identifier: ${channelId}`);
     }
     
-    // If we have a handle (starting with @), we need to use search to find the actual channelId
-    const isHandle = channelId && !channelId.includes("UC") && (channelId.startsWith("@") || channel.url.includes("@"));
+    // Check if we have a custom URL format (c/, user/, or @handle)
+    const isCustomFormat = channelId && (
+      !channelId.includes("UC") || 
+      channelId.startsWith("@") || 
+      channel.url.includes("/c/") || 
+      channel.url.includes("/user/") ||
+      channel.url.includes("@")
+    );
     
-    if (isHandle || (!channelId && channel.name)) {
+    if (isCustomFormat) {
       try {
         // Get the search term - either the handle without @ or the channel name
-        const searchTerm = isHandle ? 
-          (channelId?.startsWith("@") ? channelId.substring(1) : channelId) : 
-          channel.name;
+        let searchTerm = channelId;
+        
+        // If it's a /c/ or /user/ format, use the part after the slash
+        if (channel.url.includes("/c/") || channel.url.includes("/user/")) {
+          const customUrlMatch = channel.url.match(/(?:\/c\/|\/user\/)([^\/\s?]+)/);
+          if (customUrlMatch && customUrlMatch[1]) {
+            searchTerm = customUrlMatch[1];
+          }
+        } else if (channelId?.startsWith("@")) {
+          searchTerm = channelId.substring(1);
+        }
           
         console.log(`Searching for channel with term: ${searchTerm}`);
         
