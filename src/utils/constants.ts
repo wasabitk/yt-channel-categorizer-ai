@@ -64,7 +64,7 @@ const BETTERHELP_CATEGORIES: CategoryDescription[] = [
     description: "Fitness is a content category where creators focus on physical health, sharing workouts, training routines, nutrition advice, fitness challenges, and personal transformation journeys. These creators often walk viewers through exercises, explain fitness techniques, discuss gym culture, or offer motivation for building discipline and achieving physical goals. The content is action-oriented and centered on improving the body and mindset through consistent effort."
   },
   {
-    name: "True Crime / Mystery",
+    name: "True Crime or Mystery",
     description: "True Crime / Mystery is a content category where creators research and narrate real-life cases involving crime, disappearances, unsolved mysteries, and disturbing events. These videos are often scripted, heavily researched, and focus on storytelling—walking viewers through timelines, suspects, evidence, and theories with a serious or investigative tone. The goal is to inform, engage curiosity, and sometimes seek justice or awareness."
   },
   {
