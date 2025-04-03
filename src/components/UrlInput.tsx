@@ -18,7 +18,9 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
 
   // Check if the URL is a video URL or a channel URL
   const isVideoUrl = (url: string): boolean => {
-    return url.includes("youtube.com/watch") || url.includes("youtu.be/");
+    return url.includes("youtube.com/watch") || 
+           url.includes("youtu.be/") || 
+           url.includes("youtube.com/shorts/");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +43,11 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
     
     // Show a toast if this is a video URL
     if (isVideoUrl(youtubeUrl)) {
-      toast.info("Detected a video URL. Extracting channel information...");
+      if (youtubeUrl.includes("shorts")) {
+        toast.info("Detected a YouTube Short. Extracting channel information...");
+      } else {
+        toast.info("Detected a video URL. Extracting channel information...");
+      }
     } else if (youtubeUrl.includes('/c/') || youtubeUrl.includes('/user/')) {
       toast.info("Processing custom channel URL...");
     }
@@ -72,7 +78,7 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
             type="text"
             value={youtubeUrl}
             onChange={(e) => setYoutubeUrl(e.target.value)}
-            placeholder="https://www.youtube.com/@channelname or https://youtu.be/videoId"
+            placeholder="https://www.youtube.com/@channelname or https://youtu.be/videoId or https://youtube.com/shorts/..."
             className="w-full"
           />
         </div>
@@ -97,7 +103,7 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
       )}
       
       <p className="text-xs text-muted-foreground">
-        Enter a YouTube channel URL (youtube.com/channel/ID, youtube.com/c/name, youtube.com/@handle) or video URL to analyze and categorize the channel
+        Enter a YouTube channel URL (youtube.com/channel/ID, youtube.com/c/name, youtube.com/@handle), video URL, or Shorts URL to analyze and categorize the channel
       </p>
     </div>
   );

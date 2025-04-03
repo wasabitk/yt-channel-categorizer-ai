@@ -9,11 +9,12 @@
 export const extractChannelId = (url: string): string | null => {
   let id = null;
   
-  // Check if this is a video URL
-  const videoIdMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s?]+)/);
+  // Check if this is a video URL (including Shorts)
+  const videoIdMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&\s?]+)/);
   
   if (videoIdMatch && videoIdMatch[1]) {
     // This is a video URL, we'll need to fetch the video details to get the channel ID
+    console.log(`Detected video/short ID: ${videoIdMatch[1]}`);
     return videoIdMatch[1];
   }
   
@@ -59,3 +60,4 @@ export const extractChannelId = (url: string): string | null => {
   
   return id;
 };
+
