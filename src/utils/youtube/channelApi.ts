@@ -27,7 +27,7 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
         channelId = videoInfo.channelId;
         console.log(`Found channel ID from video: ${channelId}`);
       } else {
-        throw new Error("Could not extract channel from video");
+        throw new Error("Could not extract channel from video. The video might be private or removed.");
       }
     } else {
       // First get the channel ID if the input is a custom URL
@@ -55,7 +55,7 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
         if (searchData.error) {
           // Handle API errors specifically
           if (searchData.error.errors && searchData.error.errors.some(e => e.reason === 'quotaExceeded')) {
-            throw new Error("YouTube API quota exceeded. Please try again tomorrow.");
+            throw new Error("YouTube API quota exceeded. Please try again tomorrow or use a different API key.");
           }
           throw new Error(searchData.error.message || "YouTube API error");
         }
@@ -64,7 +64,7 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
           channelId = searchData.items[0].id.channelId;
           console.log(`Found channel ID from search: ${channelId}`);
         } else {
-          throw new Error("Channel not found");
+          throw new Error("Channel not found through search. Please try a different URL or channel name.");
         }
       } catch (error) {
         // Rethrow the error to be handled in the outer catch
@@ -73,7 +73,7 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
     }
     
     if (!channelId) {
-      throw new Error("Could not determine channel ID");
+      throw new Error("Could not determine channel ID from the provided URL. Please check the URL format.");
     }
     
     // Get channel details
@@ -88,13 +88,13 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
     // Check for API errors
     if (data.error) {
       if (data.error.errors && data.error.errors.some(e => e.reason === 'quotaExceeded')) {
-        throw new Error("YouTube API quota exceeded. Please try again tomorrow.");
+        throw new Error("YouTube API quota exceeded. Please try again tomorrow or use a different API key.");
       }
       throw new Error(data.error.message || "YouTube API error");
     }
     
     if (!data.items || data.items.length === 0) {
-      throw new Error("Channel not found");
+      throw new Error("Channel not found. The channel ID might be invalid or the channel might be private.");
     }
     
     const channelData = data.items[0];

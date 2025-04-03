@@ -51,6 +51,11 @@ export const useYoutubeProcessing = () => {
           // Check if the error is due to quota exceeded
           if (channelWithDetails.error && channelWithDetails.error.includes("quota exceeded")) {
             setQuotaExceeded(true);
+            toast.error("YouTube API quota exceeded. Please try again tomorrow or use a different API key.");
+          } else if (channelWithDetails.error && channelWithDetails.error.includes("Channel not found")) {
+            toast.error("Channel not found. Please check the URL and try again.");
+          } else {
+            toast.error(channelWithDetails.error || "Failed to process channel");
           }
           
           updatedChannels[i] = channelWithDetails;
@@ -85,6 +90,9 @@ export const useYoutubeProcessing = () => {
         
         if (isQuotaError) {
           setQuotaExceeded(true);
+          toast.error("YouTube API quota exceeded. Please try again tomorrow or use a different API key.");
+        } else {
+          toast.error(errorMessage);
         }
         
         // Update the channel with error status
@@ -98,7 +106,11 @@ export const useYoutubeProcessing = () => {
     }
 
     setIsProcessing(false);
-    toast.success("Processing complete!");
+    
+    // Only show success toast if there were actually completed channels
+    if (updatedChannels.some(channel => channel.status === 'completed')) {
+      toast.success("Processing complete!");
+    }
   };
 
   const processSingleChannel = async (channel: YoutubeChannel) => {

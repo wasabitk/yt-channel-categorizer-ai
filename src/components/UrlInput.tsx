@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { YoutubeChannel } from "@/types";
 import { toast } from "sonner";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface UrlInputProps {
   isProcessing: boolean;
@@ -12,6 +14,7 @@ interface UrlInputProps {
 
 const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [lastError, setLastError] = useState<string | null>(null);
 
   // Check if the URL is a video URL or a channel URL
   const isVideoUrl = (url: string): boolean => {
@@ -26,6 +29,9 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
       return;
     }
     
+    // Reset any previous errors
+    setLastError(null);
+    
     // Create a channel object from the URL
     const newChannel: YoutubeChannel = {
       url: youtubeUrl,
@@ -38,11 +44,18 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
       toast.info("Detected a video URL. Extracting channel information...");
     }
     
-    // Process the channel
-    await onUrlSubmit(newChannel);
-    
-    // Clear the input
-    setYoutubeUrl("");
+    try {
+      // Process the channel
+      await onUrlSubmit(newChannel);
+      
+      // Clear the input
+      setYoutubeUrl("");
+    } catch (error) {
+      // Capture the error message
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setLastError(errorMessage);
+      console.error("Error processing URL:", error);
+    }
   };
 
   return (
@@ -68,6 +81,19 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
           {isProcessing ? "Processing..." : "Categorize"}
         </Button>
       </form>
+      
+      {lastError && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error Processing URL</AlertTitle>
+          <AlertDescription>
+            {lastError.includes("Channel not found") 
+              ? "The channel could not be found. Please check the URL and try again. Make sure the channel is public and accessible."
+              : lastError}
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <p className="text-xs text-muted-foreground">
         Enter a YouTube channel URL or video URL to analyze and categorize the channel
       </p>
