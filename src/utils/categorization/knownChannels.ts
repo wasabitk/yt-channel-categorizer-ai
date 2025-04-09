@@ -22,6 +22,8 @@ export const knownChannels: Record<string, Category> = {
   "@realworldpolice": "Police Cam Footage",
   "Yep The Boys": "True Crime or Mystery",
   "@yeptheboys": "True Crime or Mystery",
+  "Bozev's The World": "True Crime or Mystery",
+  "@bozevstheworld": "True Crime or Mystery",
   
   // BetterHelp categorizations
   "WhispersRed ASMR": "ASMR",
