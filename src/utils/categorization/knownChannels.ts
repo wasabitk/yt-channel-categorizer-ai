@@ -38,6 +38,8 @@ export const knownChannels: Record<string, Category> = {
   "@JeremyEthier": "Fitness",
   "Alexandra Gater": "Female Lifestyle",
   "@AlexandraGater": "Female Lifestyle",
+  "Melissa Estrella": "Female Lifestyle",
+  "@melissaa_estrellaa": "Female Lifestyle",
   "Modern Therapy": "Male Lifestyle",
   "@ModernTherapy": "Male Lifestyle",
   
