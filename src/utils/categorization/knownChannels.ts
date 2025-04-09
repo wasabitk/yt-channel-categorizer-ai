@@ -67,7 +67,8 @@ export const knownChannelIds: Record<string, Category> = {
   "UCTuDW_RrS0Di2L7CsJfFOnA": "True Crime or Mystery", // Yep The Boys channel ID
   "UCsvqVGtbbyHaMoevxPAq9Fg": "Internet Reacts / Internet Gossip", // Internet Reacts example
   "UCzx9GfbcHseFYYc0jcEqImA": "ASMR", // ASMR Darling channel ID
-  "UC2eddeJoyTIzdlHdDhRvmRw": "Doctor / Healthcare Professional" // Doctor Mike channel ID
+  "UC2eddeJoyTIzdlHdDhRvmRw": "Doctor / Healthcare Professional", // Doctor Mike channel ID
+  "UCC8_6vpyiJ1CbE0XefqI5ow": "Female Lifestyle" // Female Lifestyle channel
 };
 
 /**
