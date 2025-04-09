@@ -24,6 +24,7 @@ export const categorizeChannel = async (channel: YoutubeChannel): Promise<Catego
     const brandName = channel.brandName || getSelectedBrand();
     
     console.log(`Categorizing channel: ${channel.name || 'Unknown'}, URL: ${channel.url}`);
+    console.log(`Using brand: ${brandName}`);
     
     // FIRST STEP: Check if this is a video URL and extract the video ID
     const videoId = extractVideoId(channel.url);

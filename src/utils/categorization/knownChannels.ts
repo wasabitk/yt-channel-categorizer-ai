@@ -41,7 +41,19 @@ export const knownChannels: Record<string, Category> = {
   "Alexandra Gater": "Female Lifestyle",
   "@AlexandraGater": "Female Lifestyle",
   "Modern Therapy": "Male Lifestyle",
-  "@ModernTherapy": "Male Lifestyle"
+  "@ModernTherapy": "Male Lifestyle",
+  
+  // Zocdoc categorizations
+  "Doctor Mike": "Doctor / Healthcare Professional",
+  "@DoctorMike": "Doctor / Healthcare Professional",
+  "Mama Doctor Jones": "Doctor / Healthcare Professional",
+  "@MamaDoctorJones": "Doctor / Healthcare Professional",
+  "MedLife Crisis": "Doctor / Healthcare Professional",
+  "@MedLifeCrisis": "Doctor / Healthcare Professional",
+  "The Doctors": "Doctor / Healthcare Professional",
+  "@TheDoctors": "Doctor / Healthcare Professional",
+  "Dr. Sandra Lee (Dr. Pimple Popper)": "Doctor / Healthcare Professional",
+  "@DrSandraLee": "Doctor / Healthcare Professional"
 };
 
 /**

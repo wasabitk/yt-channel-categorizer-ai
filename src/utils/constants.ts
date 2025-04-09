@@ -89,6 +89,34 @@ const BETTERHELP_CATEGORIES: CategoryDescription[] = [
   }
 ];
 
+// Zocdoc brand categories
+const ZOCDOC_CATEGORIES: CategoryDescription[] = [
+  {
+    name: "Female Lifestyle",
+    description: "Female Lifestyle is a content category where female creators share personal, day-to-day experiences centered around modern womanhood. Typical content includes fashion choices, daily routines, meal prep or what they eat in a day, makeup and skincare routines, apartment or home tours, and updates about their personal lives (e.g., moving, relationships, career changes). Videos often focus on themes of independence, self-care, personal growth, and navigating adult life as a woman. The tone is usually relatable, aspirational, or conversational, aiming to connect with viewers through authenticity and shared life stages. This category blends elements of vlog-style storytelling, beauty, wellness, and lifestyle advice."
+  },
+  {
+    name: "Doctor / Healthcare Professional",
+    description: "Doctor / Healthcare Professional is a content category where licensed medical experts or healthcare professionals create educational content around physical and mental health, wellness, disease prevention, and medical myths. These creators often explain symptoms, break down medical studies, react to health trends from a clinical perspective, or share tips for healthier living. The content is authoritative, informative, and focused on improving the viewer's well-being through verified medical knowledge."
+  },
+  {
+    name: "True Crime or Mystery",
+    description: "True Crime / Mystery is a content category where creators research and narrate real-life cases involving crime, disappearances, unsolved mysteries, and disturbing events. These videos are often scripted, heavily researched, and focus on storytelling—walking viewers through timelines, suspects, evidence, and theories with a serious or investigative tone. The goal is to inform, engage curiosity, and sometimes seek justice or awareness."
+  },
+  {
+    name: "Internet Reacts / Internet Gossip",
+    description: "Internet Reacts / Internet Gossip is a content category where creators give their opinions, reactions, or commentary on trending internet topics, viral videos, influencer drama, celebrity news, or cultural moments. These videos are usually unscripted, personality-driven, and centered around the creator's take on events happening outside of their own life. The content is fast-paced, conversational, and focused on engaging with what's currently buzzing online."
+  },
+  {
+    name: "Movies / Film / Pop Culture",
+    description: "Movies / Film / Pop Culture is a content category where creators analyze, critique, or discuss films, TV shows, celebrity culture, and entertainment industry trends. These videos often include reviews, breakdowns of scenes or themes, rankings, or commentary on storytelling and character development. The focus is on structured media, not spontaneous viral content."
+  },
+  {
+    name: "Other",
+    description: "If a content creator does not fit any of the categories above, consider them 'Other'."
+  }
+];
+
 // Add both brands to the BRANDS array
 export const BRANDS: Brand[] = [
   {
@@ -98,6 +126,10 @@ export const BRANDS: Brand[] = [
   {
     name: "BetterHelp",
     categories: BETTERHELP_CATEGORIES
+  },
+  {
+    name: "Zocdoc",
+    categories: ZOCDOC_CATEGORIES
   }
 ];
 

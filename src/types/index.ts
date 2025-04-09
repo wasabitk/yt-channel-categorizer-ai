@@ -1,5 +1,5 @@
 
-export type BrandName = "Aura" | "BetterHelp";
+export type BrandName = "Aura" | "BetterHelp" | "Zocdoc";
 
 export interface Brand {
   name: BrandName;
@@ -28,7 +28,9 @@ export type Category =
   | "Fitness"
   | "ASMR"
   | "News/Politics"
-  | "Movies / Film / Pop Culture";
+  | "Movies / Film / Pop Culture"
+  // We don't need to add new categories for Zocdoc as they're using existing ones
+  ;
 
 export interface CategoryDescription {
   name: Category;
