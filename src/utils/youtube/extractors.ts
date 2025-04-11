@@ -64,5 +64,15 @@ export const extractChannelId = (url: string): string | null => {
     }
   }
   
+  // Try an alternative approach for c/ URLs specifically
+  if (!id && url.includes('/c/')) {
+    // Try a more lenient extraction that captures the entire path segment
+    const alternativeMatch = url.match(/\/c\/([^\/\s?]+)(?:\/|$)/);
+    if (alternativeMatch && alternativeMatch[1]) {
+      id = alternativeMatch[1];
+      console.log(`Alternative extraction for c/ URL: ${id}`);
+    }
+  }
+  
   return id;
 };

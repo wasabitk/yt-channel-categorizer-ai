@@ -23,11 +23,21 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
            url.includes("youtube.com/shorts/");
   };
 
+  // Validate a YouTube URL for basic format
+  const isValidYouTubeUrl = (url: string): boolean => {
+    return url.includes("youtube.com") || url.includes("youtu.be");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!youtubeUrl) {
       toast.error("Please enter a YouTube URL");
+      return;
+    }
+    
+    if (!isValidYouTubeUrl(youtubeUrl)) {
+      toast.error("Please enter a valid YouTube URL");
       return;
     }
     
@@ -41,7 +51,7 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
       status: 'pending'
     };
     
-    // Show a toast if this is a video URL
+    // Show a toast based on URL type
     if (isVideoUrl(youtubeUrl)) {
       if (youtubeUrl.includes("shorts")) {
         toast.info("Detected a YouTube Short. Extracting channel information...");
@@ -49,7 +59,13 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
         toast.info("Detected a video URL. Extracting channel information...");
       }
     } else if (youtubeUrl.includes('/c/') || youtubeUrl.includes('/user/')) {
-      toast.info("Processing custom channel URL...");
+      if (youtubeUrl.includes('/videos') || youtubeUrl.includes('/featured') || youtubeUrl.includes('/community')) {
+        toast.info("Processing custom channel URL with page suffix. This may require additional processing...");
+      } else {
+        toast.info("Processing custom channel URL...");
+      }
+    } else if (youtubeUrl.includes('@')) {
+      toast.info("Processing channel handle...");
     }
     
     try {
@@ -96,14 +112,14 @@ const UrlInput = ({ isProcessing, onUrlSubmit }: UrlInputProps) => {
           <AlertTitle>Error Processing URL</AlertTitle>
           <AlertDescription>
             {lastError.includes("Channel not found") 
-              ? "The channel could not be found. Please check the URL and try again. Make sure the channel is public and accessible. If using a custom URL format (like /c/ or /user/), try the @handle format instead."
+              ? "The channel could not be found. Please check the URL and try again. For custom URLs (like /c/ or /user/), try removing any page suffixes (like /videos, /community) or use the @handle format if available."
               : lastError}
           </AlertDescription>
         </Alert>
       )}
       
       <p className="text-xs text-muted-foreground">
-        Enter a YouTube channel URL (youtube.com/channel/ID, youtube.com/c/name, youtube.com/@handle), video URL, or Shorts URL to analyze and categorize the channel
+        Enter a YouTube channel URL (youtube.com/channel/ID, youtube.com/c/name, youtube.com/@handle), video URL, or Shorts URL to analyze and categorize the channel. For best results with custom URLs (/c/name), try removing page suffixes (/videos, /featured, etc).
       </p>
     </div>
   );

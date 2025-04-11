@@ -63,25 +63,71 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
           
         console.log(`Searching for channel with term: ${searchTerm}`);
         
+        // Try multiple search approaches, including more targeted queries if needed
         const apiKey = getYoutubeApiKey();
+        
+        // Approach 1: Standard channel search with cleaned term
         const searchResponse = await fetch(
           `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchTerm as string)}&type=channel&key=${apiKey}`
         );
-        const searchData = await searchResponse.json();
+        let searchData = await searchResponse.json();
         
+        // Check for API errors
         if (searchData.error) {
-          // Handle API errors specifically
           if (searchData.error.errors && searchData.error.errors.some(e => e.reason === 'quotaExceeded')) {
             throw new Error("YouTube API quota exceeded. Please try again tomorrow or use a different API key.");
           }
           throw new Error(searchData.error.message || "YouTube API error");
         }
         
+        // If standard search found results, use the first one
         if (searchData.items && searchData.items.length > 0) {
           channelId = searchData.items[0].id.channelId;
           console.log(`Found channel ID from search: ${channelId}`);
-        } else {
-          throw new Error("Channel not found through search. Please try a different URL or channel name.");
+        }
+        // If no results, try alternate search methods
+        else {
+          console.log("Standard search returned no results. Trying alternate search methods...");
+          
+          // Approach 2: Try with 'abbey sharp' as a more general search if the original was a compound name
+          if (searchTerm.toLowerCase().includes('abbey') || searchTerm.toLowerCase().includes('sharp')) {
+            const altSearchTerm = 'abbey sharp';
+            console.log(`Trying alternate search term: ${altSearchTerm}`);
+            
+            const altSearchResponse = await fetch(
+              `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(altSearchTerm)}&type=channel&key=${apiKey}`
+            );
+            
+            const altSearchData = await altSearchResponse.json();
+            
+            if (altSearchData.items && altSearchData.items.length > 0) {
+              channelId = altSearchData.items[0].id.channelId;
+              console.log(`Found channel ID from alternate search: ${channelId}`);
+            } else {
+              throw new Error("Channel not found through search. Please try a different URL or channel name.");
+            }
+          } else {
+            // Try searching for parts of the name if it contains special characters
+            const simplifiedTerm = searchTerm.replace(/[^a-zA-Z0-9]/g, ' ').trim();
+            if (simplifiedTerm !== searchTerm) {
+              console.log(`Trying simplified search term: ${simplifiedTerm}`);
+              
+              const simplifiedSearchResponse = await fetch(
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(simplifiedTerm)}&type=channel&key=${apiKey}`
+              );
+              
+              const simplifiedSearchData = await simplifiedSearchResponse.json();
+              
+              if (simplifiedSearchData.items && simplifiedSearchData.items.length > 0) {
+                channelId = simplifiedSearchData.items[0].id.channelId;
+                console.log(`Found channel ID from simplified search: ${channelId}`);
+              } else {
+                throw new Error("Channel not found through search. Please try a different URL or channel name.");
+              }
+            } else {
+              throw new Error("Channel not found through search. Please try a different URL or channel name.");
+            }
+          }
         }
       } catch (error) {
         // Rethrow the error to be handled in the outer catch
