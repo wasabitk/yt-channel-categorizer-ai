@@ -53,7 +53,9 @@ export const getChannelDetails = async (channel: YoutubeChannel): Promise<Youtub
         if (channel.url.includes("/c/") || channel.url.includes("/user/")) {
           const customUrlMatch = channel.url.match(/(?:\/c\/|\/user\/)([^\/\s?]+)/);
           if (customUrlMatch && customUrlMatch[1]) {
-            searchTerm = customUrlMatch[1];
+            // Clean up the search term by removing any trailing segments
+            searchTerm = customUrlMatch[1].replace(/\/videos$|\/featured$|\/community$|\/playlists$|\/$/, '');
+            console.log(`Using cleaned search term: ${searchTerm}`);
           }
         } else if (channelId?.startsWith("@")) {
           searchTerm = channelId.substring(1);

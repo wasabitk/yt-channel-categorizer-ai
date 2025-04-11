@@ -29,8 +29,12 @@ export const extractChannelId = (url: string): string | null => {
   for (const pattern of urlPatterns) {
     const match = url.match(pattern);
     if (match && match[1]) {
+      // Log the actual pattern that matched for debugging
       console.log(`Matched URL pattern: ${pattern}, extracted: ${match[1]}`);
-      id = match[1];
+      
+      // Remove trailing slashes or /videos from the extracted ID
+      id = match[1].replace(/\/videos$|\/featured$|\/community$|\/playlists$|\/$/, '');
+      console.log(`Cleaned ID: ${id}`);
       break;
     }
   }
@@ -54,6 +58,8 @@ export const extractChannelId = (url: string): string | null => {
     const customUrlMatch = url.match(/(?:\/c\/|\/user\/)([^\/\s?]+)/);
     if (customUrlMatch && customUrlMatch[1]) {
       id = customUrlMatch[1];
+      // Remove trailing /videos or other suffixes
+      id = id.replace(/\/videos$|\/featured$|\/community$|\/playlists$|\/$/, '');
       console.log(`Extracted custom URL part: ${id}`);
     }
   }
