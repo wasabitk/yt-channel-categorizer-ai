@@ -1,8 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
-import { Upload, FileType } from "lucide-react";
+import { Upload, FileType, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface FileUploadProps {
   onFileUploaded: (file: File) => void;
@@ -61,6 +67,11 @@ const FileUpload = ({ onFileUploaded }: FileUploadProps) => {
   const handleButtonClick = () => {
     fileInputRef.current?.click();
   };
+  
+  const csvExample = `Channel Name,YouTube Channel URL
+David Pakman Show,https://www.youtube.com/channel/UCvixJtaXuNdMPUGdOPcY8Ag
+Philip DeFranco,https://www.youtube.com/c/PhilipDeFranco
+MrBeast,https://www.youtube.com/@MrBeast`;
 
   return (
     <div
@@ -99,8 +110,29 @@ const FileUpload = ({ onFileUploaded }: FileUploadProps) => {
           Browse Files
         </Button>
         <div className="text-xs text-muted-foreground space-y-2">
-          <p>CSV must contain columns for channel URL and name</p>
-          <p>Accepted column names: "Channel URL", "URL", "Channel Name", "Name", etc.</p>
+          <div className="flex items-center justify-center gap-1">
+            <p>CSV must contain columns for channel URL and name</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+                    <HelpCircle className="h-4 w-4" />
+                    <span className="sr-only">CSV Format Help</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="w-80 p-4">
+                  <div className="space-y-2">
+                    <p className="font-semibold">Example CSV Format:</p>
+                    <pre className="bg-muted p-2 rounded-md text-xs overflow-x-auto">
+                      {csvExample}
+                    </pre>
+                    <p className="text-xs">Your CSV file should have headers and at least one column for YouTube channel URLs.</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <p>Accepted column names: "Channel URL", "YouTube Channel URL", "URL", "Channel Name", "Name", etc.</p>
         </div>
       </div>
     </div>

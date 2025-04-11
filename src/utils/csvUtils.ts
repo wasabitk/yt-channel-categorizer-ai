@@ -1,4 +1,3 @@
-
 import { YoutubeChannel } from "@/types";
 import Papa from 'papaparse';
 import { toast } from "sonner";
@@ -26,42 +25,57 @@ export const parseCSV = (file: File): Promise<YoutubeChannel[]> => {
         const headers = Object.keys(results.data[0]);
         console.log("CSV headers detected:", headers);
 
-        // Map of possible column names for URL and Name
-        const urlColumnOptions = ['Channel URL', 'ChannelURL', 'channel url', 'url', 'URL', 'Link', 'CHANNEL URL'];
-        const nameColumnOptions = ['Channel Name', 'ChannelName', 'channel name', 'name', 'Name', 'Title', 'CHANNEL NAME'];
+        // Expanded map of possible column names for URL
+        const urlColumnOptions = [
+          'Channel URL', 'ChannelURL', 'channel url', 'url', 'URL', 'Link', 'CHANNEL URL',
+          'YouTube Channel URL', 'YouTubeChannelURL', 'Youtube Channel URL', 'YOUTUBE CHANNEL URL',
+          'YouTube URL', 'YoutubeURL', 'youtube url', 'video url', 'Video URL', 'YouTubeURL'
+        ];
+        
+        // Expanded map of possible column names for Name
+        const nameColumnOptions = [
+          'Channel Name', 'ChannelName', 'channel name', 'name', 'Name', 'Title', 'CHANNEL NAME',
+          'YouTube Channel Name', 'YouTubeChannelName', 'Youtube Channel Name'
+        ];
 
         // Find the actual column names in the CSV
-        const urlColumn = headers.find(header => urlColumnOptions.includes(header));
-        const nameColumn = headers.find(header => nameColumnOptions.includes(header));
+        let urlColumn = headers.find(header => urlColumnOptions.includes(header));
+        let nameColumn = headers.find(header => nameColumnOptions.includes(header));
 
-        if (!urlColumn && !nameColumn) {
-          reject(new Error(`Could not find required columns. Your CSV needs columns for channel URL and name. Found columns: ${headers.join(', ')}`));
+        // If no exact match found, try partial matching (for columns like "Channel URL (required)")
+        if (!urlColumn) {
+          urlColumn = headers.find(header => 
+            urlColumnOptions.some(option => header.includes(option))
+          );
+        }
+        
+        if (!nameColumn) {
+          nameColumn = headers.find(header => 
+            nameColumnOptions.some(option => header.includes(option))
+          );
+        }
+
+        if (!urlColumn) {
+          reject(new Error(`Could not find a column for channel URLs. Your CSV needs a column with a name like "Channel URL", "YouTube Channel URL", etc. Found columns: ${headers.join(', ')}`));
           return;
         }
 
-        const channels: YoutubeChannel[] = results.data.map((row: any, index: number) => {
-          // Get URL and name using the detected column headers or try common alternatives
-          let url = '';
+        const channels: YoutubeChannel[] = [];
+        let rowsWithoutUrls = 0;
+
+        results.data.forEach((row: any, index: number) => {
+          // Get URL from the detected URL column
+          let url = row[urlColumn!] || '';
+          
+          // Clean up the URL (remove quotes, extra spaces)
+          url = url.trim().replace(/^["'](.*)["']$/, '$1');
+          
+          // Get name from the detected name column or try other columns
           let name = '';
-
-          // Try to find URL in different possible columns
-          if (urlColumn) {
-            url = row[urlColumn] || '';
-          } else {
-            // Try each possible column name
-            for (const col of urlColumnOptions) {
-              if (row[col]) {
-                url = row[col];
-                break;
-              }
-            }
-          }
-
-          // Try to find name in different possible columns
           if (nameColumn) {
             name = row[nameColumn] || '';
           } else {
-            // Try each possible column name
+            // Try each possible column name for the channel name
             for (const col of nameColumnOptions) {
               if (row[col]) {
                 name = row[col];
@@ -70,32 +84,34 @@ export const parseCSV = (file: File): Promise<YoutubeChannel[]> => {
             }
           }
 
-          // Validate this row has minimal required data
-          if (!url && index < 5) {
-            console.warn(`Row ${index + 1} is missing a URL`);
+          // Skip empty URLs without logging to avoid console spam
+          if (!url.trim()) {
+            rowsWithoutUrls++;
+            return; // Skip this row
           }
 
-          return {
-            url: url || '',
-            name: name || `Channel ${index + 1}`,
+          channels.push({
+            url,
+            name: name.trim() || `Channel ${index + 1}`,
             status: 'pending'
-          };
+          });
         });
-
-        // Filter out entries with empty URLs
-        const validChannels = channels.filter(channel => !!channel.url.trim());
         
-        if (validChannels.length === 0) {
-          reject(new Error("No valid channel URLs found in the CSV. Please check the file format."));
+        if (channels.length === 0) {
+          if (rowsWithoutUrls > 0) {
+            reject(new Error(`No valid channel URLs found in the CSV. Found ${rowsWithoutUrls} rows without URLs. Please make sure your URLs are in a column named similar to "Channel URL" or "YouTube Channel URL".`));
+          } else {
+            reject(new Error("No valid channel URLs found in the CSV. Please check the file format."));
+          }
           return;
         }
 
-        if (validChannels.length < channels.length) {
-          console.warn(`Found ${channels.length} rows but only ${validChannels.length} had valid URLs`);
-          toast.warning(`${channels.length - validChannels.length} rows were skipped because they had no URL`);
+        if (rowsWithoutUrls > 0) {
+          console.warn(`Found ${results.data.length} rows but only ${channels.length} had valid URLs`);
+          toast.warning(`${rowsWithoutUrls} rows were skipped because they had no URL`);
         }
 
-        resolve(validChannels);
+        resolve(channels);
       },
       error: (error) => {
         console.error("CSV parsing error:", error);
